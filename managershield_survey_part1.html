@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ManagerShield – Upward Toxicity Investigation Survey</title>
+    <style>
+        /* ---------- Reset & Base ---------- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #1e2a3a;
+        }
+
+        /* ---------- Header ---------- */
+        .header {
+            background: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #1a4b8c;
+        }
+        .header .logo { font-size: 1.5rem; font-weight: 700; color: #1a4b8c; letter-spacing: -0.5px; }
+        .header .logo span { color: #d32f2f; font-weight: 300; }
+        .header .tagline {
+            font-size: 0.9rem; color: #4a5c72; font-weight: 300;
+            border-left: 2px solid #d32f2f; padding-left: 1rem;
+        }
+
+        /* ---------- Main Container ---------- */
+        .container { flex: 1; max-width: 980px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
+        .card {
+            background: #ffffff; border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            padding: 2rem 2rem 1.8rem; transition: opacity 0.2s;
+        }
+
+        /* Progress bar */
+        .progress-container { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+        .progress-bar { flex: 1; height: 6px; background: #e6eaef; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #1a4b8c; width: 0%; transition: width 0.3s ease; }
+        .progress-text { font-size: 0.85rem; font-weight: 600; color: #1a4b8c; min-width: 4rem; text-align: right; }
+
+        /* Section header */
+        .section-title { font-size: 1.6rem; font-weight: 600; color: #0b2a4a; margin-bottom: 0.25rem; }
+        .section-subtitle { font-size: 0.95rem; color: #4a5c72; margin-bottom: 1.5rem; border-bottom: 1px solid #eef2f7; padding-bottom: 0.75rem; }
+
+        /* Question group */
+        .question-group { display: flex; flex-direction: column; gap: 1.4rem; margin-bottom: 2rem; }
+        .question-item {
+            background: #f9fafc; border-radius: 10px; padding: 1rem 1.2rem;
+            border-left: 4px solid #1a4b8c; transition: all 0.2s;
+        }
+        .question-item .q-text { font-weight: 500; font-size: 1rem; color: #1e2a3a; margin-bottom: 0.6rem; }
+        .question-item .q-text .q-num { color: #1a4b8c; font-weight: 600; margin-right: 0.4rem; }
+
+        /* Likert radio group */
+        .likert-group { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem; padding-top: 0.2rem; }
+        .likert-option { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 50px; }
+        .likert-option input[type="radio"] { margin: 0 0 4px 0; width: 18px; height: 18px; cursor: pointer; accent-color: #1a4b8c; }
+        .likert-option label { font-size: 0.7rem; font-weight: 500; color: #2c3e50; text-align: center; line-height: 1.2; cursor: pointer; }
+        .likert-option input:checked + label { color: #1a4b8c; font-weight: 700; }
+
+        /* Textarea for open-ended */
+        .open-ended textarea {
+            width: 100%; padding: 0.7rem 1rem; border: 1px solid #d0d8e2; border-radius: 8px;
+            font-size: 0.95rem; font-family: inherit; resize: vertical; min-height: 80px;
+            transition: border 0.2s; background: #ffffff;
+        }
+        .open-ended textarea:focus { outline: none; border-color: #1a4b8c; box-shadow: 0 0 0 3px rgba(26, 75, 140, 0.15); }
+
+        /* Navigation buttons */
+        .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 1.8rem; gap: 1rem; flex-wrap: wrap; }
+        .btn {
+            padding: 0.7rem 2rem; font-size: 1rem; font-weight: 600; border: none; border-radius: 50px;
+            cursor: pointer; transition: background 0.2s, transform 0.1s; background: #eef2f7; color: #1e2a3a;
+        }
+        .btn-primary { background: #1a4b8c; color: #fff; }
+        .btn-primary:hover { background: #0f3a6b; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: #eef2f7; color: #1e2a3a; }
+        .btn-secondary:hover { background: #dce3ec; }
+        .btn-success { background: #2e7d32; color: #fff; }
+        .btn-success:hover { background: #1b5e20; }
+        .btn:active { transform: scale(0.96); }
+
+        /* ---------- Footer ---------- */
+        .footer {
+            background: #ffffff; border-top: 1px solid #e6eaef; padding: 1.2rem 2rem;
+            text-align: center; font-size: 0.85rem; color: #5a6c7e; margin-top: auto;
+        }
+        .footer strong { color: #1a4b8c; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 768px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 0.4rem; padding: 0.8rem 1.2rem; }
+            .header .tagline { border-left: none; padding-left: 0; }
+            .container { padding: 0 0.8rem; margin: 1rem auto; }
+            .card { padding: 1.2rem 1rem; }
+            .section-title { font-size: 1.3rem; }
+            .likert-group { flex-wrap: wrap; justify-content: flex-start; gap: 0.2rem; }
+            .likert-option { flex: 0 0 auto; min-width: 44px; }
+            .likert-option label { font-size: 0.6rem; }
+            .btn { padding: 0.5rem 1.2rem; font-size: 0.9rem; }
+        }
+        @media (max-width: 480px) {
+            .question-item { padding: 0.8rem; }
+            .likert-option { min-width: 36px; }
+            .likert-option label { font-size: 0.55rem; }
+            .nav-buttons { flex-direction: column; align-items: stretch; }
+            .btn { width: 100%; text-align: center; }
+        }
+
+        .section-wrapper { display: none; }
+        .section-wrapper.active { display: block; }
+        .question-item.required-missing { border-left-color: #d32f2f; background: #fff5f5; }
+        .error-message { color: #d32f2f; font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600; }
+
+        /* Ranking alert badge */
+        .rank-badge { display: inline-block; padding: 0.5rem 2rem; border-radius: 50px; font-weight: 700; font-size: 1.4rem; margin-top: 0.5rem; }
+        .rank-green { background: #e8f5e9; color: #1b5e20; border: 2px solid #4caf50; }
+        .rank-yellow { background: #fff8e1; color: #b7650e; border: 2px solid #ff9800; }
+        .rank-red { background: #ffebee; color: #b71c1c; border: 2px solid #f44336; }
+        .rank-score-grid { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0; }
+        .rank-score-item { background: #f9fafc; padding: 1rem 1.5rem; border-radius: 12px; min-width: 140px; }
+        .rank-score-item .label { font-size: 0.8rem; color: #4a5c72; }
+        .rank-score-item .value { font-size: 2rem; font-weight: 700; color: #1a4b8c; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="logo">Manager<span>Shield</span></div>
+        <div class="tagline">Investigation Portal · Upward Toxicity & Insubordination Identification</div>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <div class="container">
+        <div class="card" id="surveyCard">
+            <!-- Progress -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+
+            <!-- Dynamic sections -->
+            <div id="sectionsContainer"></div>
+
+            <!-- Navigation -->
+            <div class="nav-buttons" id="navButtons">
+                <button class="btn btn-secondary" id="prevBtn" disabled>← Previous</button>
+                <button class="btn btn-primary" id="nextBtn">Next →</button>
+                <button class="btn btn-success" id="submitBtn" style="display:none;">Submit & View Ranking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        &copy; 2025-2026 Beta ORI Inc. Canada. All Rights Reserved <strong>ManagerShield is a product of Beta ORI Inc. Canada</strong> — Every Conflict Investigated. Every Leader Protected.
+        <br />
+        <span style="font-size:0.75rem; opacity:0.7;">Confidential · Rankings alert HR to systemic toxicity and insubordination</span>
+    </footer>
+
+    <script>
+        // ============================================================
+        //  SURVEY DATA
+        // ============================================================
+        const surveyData = {
+            sections: [
+                {
+                    id: 'A', title: 'Triangulation via 360-Degree Feedback',
+                    subtitle: 'Assessing if the negative behavior is corroborated by peers or if it is an isolated dyadic conflict between manager and employee.',
+                    questions: [
+                        { id: 'A1', text: 'Do the employee’s peers report experiencing hostility, intimidation, or lack of cooperation from them?', type: 'likert' },
+                        { id: 'A2', text: 'Is the negative behavior reported exclusively by the direct manager, or is it corroborated by other departments?', type: 'likert' },
+                        { id: 'A3', text: 'In 360-degree reviews, do colleagues describe the employee as approachable and collaborative, or combative and dismissive?', type: 'likert' },
+                        { id: 'A4', text: 'Does the employee display the same hostile behavior toward junior staff as they do toward their manager?', type: 'likert' },
+                        { id: 'A5', text: 'If the employee challenges the manager, do they do so in private, or do they intentionally stage it to embarrass the manager in front of peers?', type: 'likert' },
+                        { id: 'A6', text: 'Do skip-level meetings reveal that the team perceives the employee as a disruptor or a toxic influence?', type: 'likert' },
+                        { id: 'A7', text: 'Do other managers report similar difficulties when collaborating with this specific employee?', type: 'likert' },
+                        { id: 'A8', text: 'Does the employee’s performance review contain historical notes from previous managers regarding similar insubordinate patterns?', type: 'likert' },
+                        { id: 'A9', text: 'Is there a discrepancy between the employee’s self-assessment (viewing themselves as a champion of justice) and peer assessments (viewing them as aggressive)?', type: 'likert' },
+                        { id: 'A10', text: 'Do cross-functional partners complain that the employee withholds information or stalls joint projects?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'B', title: 'Peer & Team Dynamics',
+                    subtitle: 'Evaluating how the employee interacts with the broader team to identify patterns of manipulation and mobbing.',
+                    questions: [
+                        { id: 'B1', text: 'When feedback is given, does the employee attack the messenger rather than address the feedback content?', type: 'likert' },
+                        { id: 'B2', text: 'Has the employee been observed isolating or "mobbing" peers who disagree with them, not just the manager?', type: 'likert' },
+                        { id: 'B3', text: 'Does the employee’s toxic behavior fluctuate depending on which manager is present?', type: 'likert' },
+                        { id: 'B4', text: 'Are there witnesses to the alleged hostile behavior, or does it only occur when no one else is present?', type: 'likert' },
+                        { id: 'B5', text: 'Do peers actively avoid being paired on projects with this employee due to their antagonistic style?', type: 'likert' },
+                        { id: 'B6', text: 'Has the employee ever taken credit for a peer’s work to make themselves look superior to management?', type: 'likert' },
+                        { id: 'B7', text: 'Does the employee spread rumors or disparaging information about the manager to their peers?', type: 'likert' },
+                        { id: 'B8', text: 'In team meetings, does the employee use body language (eye-rolling, sighing, crossing arms) to undermine the manager’s authority?', type: 'likert' },
+                        { id: 'B9', text: 'If a peer supports the manager’s directive, does the employee retaliate against that peer?', type: 'likert' },
+                        { id: 'B10', text: 'Does the employee’s performance data objectively support their claims of superiority, or is their hostility masking incompetence?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'C', title: 'Workflow & Process Disruption Analysis',
+                    subtitle: 'Identifying measurable patterns of sabotage, delays, and malicious compliance targeting operational efficiency.',
+                    questions: [
+                        { id: 'C1', text: 'Is there a measurable pattern of the employee missing deadlines specifically on tasks assigned by this manager?', type: 'likert' },
+                        { id: 'C2', text: 'Does the employee deliberately misinterpret instructions to slow down project momentum?', type: 'likert' },
+                        { id: 'C3', text: 'Are there instances of "malicious compliance" where the employee follows rules to the letter to halt business operations?', type: 'likert' },
+                        { id: 'C4', text: 'Does the employee fail to share critical information with the manager, thereby putting the manager at a disadvantage?', type: 'likert' },
+                        { id: 'C5', text: 'Is there digital evidence (email timestamps, system logs) of the employee intentionally delaying responses to urgent manager requests?', type: 'likert' },
+                        { id: 'C6', text: 'Does the employee bypass the manager and go directly to higher-ups to overturn decisions they dislike?', type: 'likert' },
+                        { id: 'C7', text: 'Has the employee refused to use required software, systems, or processes, claiming they "know a better way"?', type: 'likert' },
+                        { id: 'C8', text: 'When asked to complete a task, does the employee demand an excessive level of written justification before complying?', type: 'likert' },
+                        { id: 'C9', text: 'Does the employee consistently challenge the manager’s authority in front of clients or external stakeholders?', type: 'likert' },
+                        { id: 'C10', text: 'Are workflow bottlenecks consistently traced back to this specific employee’s desk?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'D', title: 'System & Communication Sabotage',
+                    subtitle: 'Detecting covert tactics used to undermine the manager\'s position and control over resources.',
+                    questions: [
+                        { id: 'D1', text: 'Does the employee delegate their own tasks upward, forcing the manager to do the work to avoid conflict?', type: 'likert' },
+                        { id: 'D2', text: 'When a new policy is introduced, does the employee organize passive resistance (e.g., a coordinated refusal to adapt)?', type: 'likert' },
+                        { id: 'D3', text: 'Has the employee "lost" or failed to submit critical paperwork as a punitive measure against the manager?', type: 'likert' },
+                        { id: 'D4', text: 'Does the employee weaponize their specific technical expertise by refusing to train others or share knowledge?', type: 'likert' },
+                        { id: 'D5', text: 'Is there evidence that the employee intentionally introduces errors to prove the manager’s instructions were wrong?', type: 'likert' },
+                        { id: 'D6', text: 'Does the employee exploit organizational silos to avoid accountability to their direct manager?', type: 'likert' },
+                        { id: 'D7', text: 'When asked for status updates, does the employee respond with hostility or accuse the manager of micromanagement?', type: 'likert' },
+                        { id: 'D8', text: 'Does the employee intentionally set the manager up to fail by withholding risk warnings on projects?', type: 'likert' },
+                        { id: 'D9', text: 'Are project retrospectives frequently derailed by this employee’s insistence on blaming the manager for all issues?', type: 'likert' },
+                        { id: 'D10', text: 'Does the employee refuse to acknowledge the manager as the final decision-maker on team deliverables?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'E', title: 'Task vs. Relationship Conflict Filter',
+                    subtitle: 'Distinguishing between healthy task-based disagreements and toxic relationship-based attacks.',
+                    questions: [
+                        { id: 'E1', text: 'Is the conflict strictly about how to execute a task (task conflict), or is it about the manager’s character/competence (relationship conflict)?', type: 'likert' },
+                        { id: 'E2', text: 'When the employee disagrees with a strategy, do they attack the strategy, or do they attack the manager’s intelligence?', type: 'likert' },
+                        { id: 'E3', text: 'Does the employee use insulting, demeaning, or derogatory language when expressing professional disagreements?', type: 'likert' },
+                        { id: 'E4', text: 'Is the employee capable of separating the idea from the person, or do they view all professional disagreements as personal affronts?', type: 'likert' },
+                        { id: 'E5', text: 'Does the employee resort to shouting, slamming objects, or physical intimidation during professional debates?', type: 'likert' },
+                        { id: 'E6', text: 'Are the employee’s disagreements based on data and logic, or on personal preference and a desire for control?', type: 'likert' },
+                        { id: 'E7', text: 'Does the employee attempt to humiliate the manager regarding their technical skills or industry knowledge?', type: 'likert' },
+                        { id: 'E8', text: 'Has the employee ever made derogatory comments about the manager’s personal life, appearance, or background?', type: 'likert' },
+                        { id: 'E9', text: 'Does the employee’s behavior cross the line from assertive advocacy into targeted harassment?', type: 'likert' },
+                        { id: 'E10', text: 'Is the employee capable of accepting a final decision once leadership has ruled, or do they continue to sabotage the outcome?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'F', title: 'Behavioral Responses & Pushback',
+                    subtitle: 'Analyzing the proportionality and professionalism of the employee\'s reactions to directives.',
+                    questions: [
+                        { id: 'F1', text: 'Does the employee frequently use absolute terms ("You never," "You always") to criticize the manager?', type: 'likert' },
+                        { id: 'F2', text: 'Does the employee refuse to participate in mediation or conflict resolution meetings?', type: 'likert' },
+                        { id: 'F3', text: 'Are the employee’s complaints framed as systemic organizational failures, or purely as the manager’s personal vendetta?', type: 'likert' },
+                        { id: 'F4', text: 'Does the employee project their own mistakes onto the manager, accusing them of incompetence?', type: 'likert' },
+                        { id: 'F5', text: 'When receiving constructive criticism, does the employee claim the manager is "retaliating" against them?', type: 'likert' },
+                        { id: 'F6', text: 'Does the employee gaslight the manager by denying conversations or events that demonstrably occurred?', type: 'likert' },
+                        { id: 'F7', text: 'Is the employee’s pushback proportionate to the issue, or do they create catastrophic narratives over minor inconveniences?', type: 'likert' },
+                        { id: 'F8', text: 'Does the employee show a pattern of devaluing the manager’s past experience and credentials?', type: 'likert' },
+                        { id: 'F9', text: 'Has the employee explicitly stated they do not respect the manager’s authority?', type: 'likert' },
+                        { id: 'F10', text: 'Does the employee use sarcasm or passive-aggressive humor to demean the manager in group settings?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'G', title: 'Formal Grievances vs. Informal Hostility',
+                    subtitle: 'Differentiating between legally protected complaint filings and weaponized, informal hostility.',
+                    questions: [
+                        { id: 'G1', text: 'Is the employee filing formal HR grievances based on verifiable facts, or on subjective feelings of being "disrespected"?', type: 'likert' },
+                        { id: 'G2', text: 'Are the employee’s HR complaints a reaction to being disciplined, indicating weaponization of the complaint process?', type: 'likert' },
+                        { id: 'G3', text: 'Does the employee use informal channels (water cooler gossip, anonymous Slack messages) to undermine the manager rather than formal channels?', type: 'likert' },
+                        { id: 'G4', text: 'If the employee is filing protected complaints (e.g., safety violations), is their interpersonal behavior outside those complaints still hostile?', type: 'likert' },
+                        { id: 'G5', text: 'Has the employee ever threatened legal action or public exposure to intimidate the manager into dropping a performance review?', type: 'likert' },
+                        { id: 'G6', text: 'Is the organization currently undergoing systemic changes (layoffs, restructuring) that might explain the employee’s anxiety rather than labeling it "bullying"?', type: 'likert' },
+                        { id: 'G7', text: 'Does the employee lack clear job boundaries, causing them to push back on tasks they feel are "not their job"?', type: 'likert' },
+                        { id: 'G8', text: 'Is the manager’s leadership style known to be highly authoritarian, which could be triggering defensive hostility rather than proactive bullying?', type: 'likert' },
+                        { id: 'G9', text: 'Has the employee received adequate training, or is their resistance born of a lack of competence and fear of exposure?', type: 'likert' },
+                        { id: 'G10', text: 'Is the team suffering from change fatigue, making them resistant to any new directive, regardless of who delivers it?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'H', title: 'Systemic Organizational Factors',
+                    subtitle: 'Checking for environmental causes of the employee\'s behavior, ensuring it is not a symptom of poor leadership.',
+                    questions: [
+                        { id: 'H1', text: 'Does the manager fail to set clear expectations, leading the employee to push back against ambiguous directives?', type: 'likert' },
+                        { id: 'H2', text: 'Is there a history of favoritism in the department that has bred resentment among the staff?', type: 'likert' },
+                        { id: 'H3', text: 'Are the manager’s KPIs unrealistic, causing the employee to use aggressive tactics to protect themselves from failure?', type: 'likert' },
+                        { id: 'H4', text: 'Has HR previously failed to address legitimate employee concerns, forcing them into more aggressive, informal hostility?', type: 'likert' },
+                        { id: 'H5', text: 'Does the employee belong to a protected class, and could their "pushback" be an attempt to assert rights against discriminatory practices?', type: 'likert' },
+                        { id: 'H6', text: 'Is the employee dealing with a known personal crisis that is manifesting as workplace hostility?', type: 'likert' },
+                        { id: 'H7', text: 'Does the organization have a culture of "lateral violence" (passed-down stress) that is now being directed upward?', type: 'likert' },
+                        { id: 'H8', text: 'Is the employee actually acting as the informal spokesperson for a deeply frustrated team?', type: 'likert' },
+                        { id: 'H9', text: 'If a new manager were inserted tomorrow, would the employee’s behavior likely cease?', type: 'likert' },
+                        { id: 'H10', text: 'Does the employee use union or works council protections specifically as a shield to engage in abusive behavior without consequence?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'I', title: 'Confirming Core Dynamics',
+                    subtitle: 'Establishing the severity, intentionality, and impact of the behavior on the manager and the organization.',
+                    questions: [
+                        { id: 'I1', text: 'Does the employee deliberately seek to strip the manager of their authority in the eyes of the team?', type: 'likert' },
+                        { id: 'I2', text: 'Is there evidence that the employee derives satisfaction from causing the manager visible distress?', type: 'likert' },
+                        { id: 'I3', text: 'Does the employee’s behavior meet the legal threshold for a hostile work environment (severe or pervasive)?', type: 'likert' },
+                        { id: 'I4', text: 'Does the employee refuse to recognize the structural reality that the manager is the designated authority?', type: 'likert' },
+                        { id: 'I5', text: 'Is the employee’s behavior isolated to one specific manager, or is it a pattern across all figures of authority?', type: 'likert' },
+                        { id: 'I6', text: 'Does the employee demand that the manager justify their authority before complying with basic instructions?', type: 'likert' },
+                        { id: 'I7', text: 'Are there instances of the employee physically blocking the manager from accessing spaces or materials?', type: 'likert' },
+                        { id: 'I8', text: 'Does the employee use social media or external platforms to defame the manager?', type: 'likert' },
+                        { id: 'I9', text: 'Has the employee stolen or destroyed the manager’s property or work materials?', type: 'likert' },
+                        { id: 'I10', text: 'Is the employee’s behavior causing the manager to experience diagnosable stress, anxiety, or sleep disruption?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'J', title: '⭐ Final Risk Assessment & Red Flag Alert (Rank My Workplace)',
+                    subtitle: 'This is your final scorecard. Your answers here generate an alert level regarding the employee\'s toxicity.',
+                    questions: [
+                        { id: 'J1', text: 'Has the manager begun to alter their legitimate business decisions specifically to avoid triggering the employee’s hostility?', type: 'likert' },
+                        { id: 'J2', text: 'Is the employee aware that their behavior is causing harm, and do they continue to do it regardless?', type: 'likert' },
+                        { id: 'J3', text: 'Does the employee recruit others to join in their hostility, creating a "mob" dynamic against the manager?', type: 'likert' },
+                        { id: 'J4', text: 'Does the employee use exaggerated emotional displays (crying, shouting) to manipulate and control the manager?', type: 'likert' },
+                        { id: 'J5', text: 'Does the employee gaslight HR by presenting a calm demeanor during investigations while being abusive in practice?', type: 'likert' },
+                        { id: 'J6', text: 'Is there a clear, observable pattern of this behavior over months, rather than an isolated bad week?', type: 'likert' },
+                        { id: 'J7', text: 'Has the employee explicitly stated their goal is to get the manager removed or fired?', type: 'likert' },
+                        { id: 'J8', text: 'Does the employee refuse to sign off on performance plans or acknowledgment forms as a tactic of defiance?', type: 'likert' },
+                        { id: 'J9', text: 'Is the behavior severe enough that a reasonable person would find it intimidating or abusive?', type: 'likert' },
+                        { id: 'J10', text: 'Has all standard conflict resolution and mediation been exhausted without any change in the employee’s hostile conduct?', type: 'likert' }
+                    ]
+                }
+            ]
+        };
+
+        // ============================================================
+        //  STATE & SAFE STORAGE
+        // ============================================================
+        let currentSection = 0;
+        const totalSections = surveyData.sections.length;
+        let answers = {};
+
+        // Safe LocalStorage retrieval
+        try {
+            const stored = localStorage.getItem('managershield_survey_answers');
+            if (stored) {
+                answers = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.warn("LocalStorage access denied or unavailable. Survey will function in-memory only.", e);
+        }
+
+        // ============================================================
+        //  RENDER & VALIDATION
+        // ============================================================
+        function renderSection(index) {
+            const section = surveyData.sections[index];
+            const container = document.getElementById('sectionsContainer');
+            if (!container) return;
+
+            let html = `<div class="section-wrapper active" data-section="${section.id}">`;
+            html += `<h2 class="section-title">Section ${section.id}: ${section.title}</h2>`;
+            html += `<p class="section-subtitle">${section.subtitle}</p>`;
+            html += `<div class="question-group">`;
+
+            section.questions.forEach((q, idx) => {
+                const qid = q.id;
+                const saved = (answers[section.id] && answers[section.id][qid]) || '';
+                const isLikert = q.type === 'likert';
+                html += `<div class="question-item" data-qid="${qid}">`;
+                html += `<div class="q-text"><span class="q-num">${idx+1}.</span> ${q.text}</div>`;
+
+                if (isLikert) {
+                    html += `<div class="likert-group">`;
+                    const options = [
+                        { value: '1', label: 'Strongly Disagree' },
+                        { value: '2', label: 'Disagree' },
+                        { value: '3', label: 'Neutral' },
+                        { value: '4', label: 'Agree' },
+                        { value: '5', label: 'Strongly Agree' }
+                    ];
+                    
+                    if (section.id === 'J') {
+                        const rankLabels = [
+                            { value: '1', label: 'Very Low / No Risk' },
+                            { value: '2', label: 'Low' },
+                            { value: '3', label: 'Moderate' },
+                            { value: '4', label: 'High' },
+                            { value: '5', label: 'Very High / Severe' }
+                        ];
+                        rankLabels.forEach(opt => {
+                            const checked = (saved === opt.value) ? 'checked' : '';
+                            html += `<div class="likert-option">`;
+                            html += `<input type="radio" name="${qid}" value="${opt.value}" id="${qid}_${opt.value}" ${checked} />`;
+                            html += `<label for="${qid}_${opt.value}">${opt.label}</label>`;
+                            html += `</div>`;
+                        });
+                    } else {
+                        options.forEach(opt => {
+                            const checked = (saved === opt.value) ? 'checked' : '';
+                            html += `<div class="likert-option">`;
+                            html += `<input type="radio" name="${qid}" value="${opt.value}" id="${qid}_${opt.value}" ${checked} />`;
+                            html += `<label for="${qid}_${opt.value}">${opt.label}</label>`;
+                            html += `</div>`;
+                        });
+                    }
+                    html += `</div>`;
+                } else {
+                    html += `<div class="open-ended">`;
+                    html += `<textarea name="${qid}" rows="3" placeholder="Type your response here...">${saved}</textarea>`;
+                    html += `</div>`;
+                }
+                html += `</div>`;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+
+            // Attach listeners
+            const sectionId = section.id;
+            document.querySelectorAll(`.section-wrapper[data-section="${sectionId}"] input[type="radio"]`).forEach(el => {
+                el.addEventListener('change', function() {
+                    if (!answers[sectionId]) answers[sectionId] = {};
+                    answers[sectionId][this.name] = this.value;
+                    saveToStorage();
+                    updateProgress();
+                });
+            });
+            document.querySelectorAll(`.section-wrapper[data-section="${sectionId}"] textarea`).forEach(el => {
+                el.addEventListener('input', function() {
+                    if (!answers[sectionId]) answers[sectionId] = {};
+                    answers[sectionId][this.name] = this.value;
+                    saveToStorage();
+                });
+            });
+
+            updateProgress();
+            updateNavButtons();
+        }
+
+        function validateCurrentSection() {
+            const section = surveyData.sections[currentSection];
+            const sectionId = section.id;
+            const sectionAnswers = answers[sectionId] || {};
+            
+            let allAnswered = true;
+            let firstUnansweredQid = null;
+
+            section.questions.forEach(q => {
+                if (!sectionAnswers[q.id] || sectionAnswers[q.id].trim() === '') {
+                    allAnswered = false;
+                    if (!firstUnansweredQid) firstUnansweredQid = q.id;
+                }
+            });
+
+            // Clear previous errors
+            document.querySelectorAll('.required-missing').forEach(el => {
+                el.classList.remove('required-missing');
+                const errorMsg = el.querySelector('.error-message');
+                if (errorMsg) errorMsg.remove();
+            });
+
+            if (!allAnswered) {
+                const qElement = document.querySelector(`.question-item[data-qid="${firstUnansweredQid}"]`);
+                if (qElement) {
+                    qElement.classList.add('required-missing');
+                    qElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'error-message';
+                    errorMsg.textContent = '⚠️ Please answer this question before proceeding.';
+                    qElement.appendChild(errorMsg);
+                }
+                return false;
+            }
+            return true;
+        }
+
+        function updateProgress() {
+            const pct = Math.round(((currentSection + 1) / totalSections) * 100);
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressText').textContent = pct + '%';
+        }
+
+        function updateNavButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            prevBtn.disabled = (currentSection === 0);
+            if (currentSection === totalSections - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        function saveToStorage() {
+            try {
+                localStorage.setItem('managershield_survey_answers', JSON.stringify(answers));
+            } catch (e) {
+                console.warn("LocalStorage save failed.", e);
+            }
+        }
+
+        function goToSection(index) {
+            if (index < 0 || index >= totalSections) return;
+            currentSection = index;
+            renderSection(currentSection);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================================
+        //  SUBMIT & JSON GENERATION
+        // ============================================================
+        function submitSurvey() {
+            // Fallback to in-memory answers if localStorage is blocked
+            let finalAnswers = {};
+            try {
+                finalAnswers = JSON.parse(localStorage.getItem('managershield_survey_answers') || '{}');
+            } catch (e) {
+                finalAnswers = answers;
+            }
+            
+            const jAnswers = finalAnswers['J'] || {};
+            const severityScore = parseFloat(jAnswers['J9']) || 0;
+            const patternScore = parseFloat(jAnswers['J6']) || 0;
+            const exhaustionScore = parseFloat(jAnswers['J10']) || 0;
+            const manipulationScore = parseFloat(jAnswers['J4']) || 0;
+
+            const overallRisk = (severityScore + patternScore + exhaustionScore + manipulationScore) / 4;
+            let alertLevel, badgeClass, alertEmoji;
+            
+            if (overallRisk >= 4.0) {
+                alertLevel = '🔴 HIGH ALERT – Confirmed Upward Toxicity';
+                badgeClass = 'rank-red';
+                alertEmoji = '🚨';
+            } else if (overallRisk >= 2.5) {
+                alertLevel = '🟡 MODERATE RISK – Requires Further Investigation';
+                badgeClass = 'rank-yellow';
+                alertEmoji = '⚠️';
+            } else {
+                alertLevel = '🟢 LOW RISK – Likely Dyadic Conflict or Management Issue';
+                badgeClass = 'rank-green';
+                alertEmoji = '✅';
+            }
+
+            const submission = {
+                timestamp: new Date().toISOString(),
+                survey_version: '1.0 (Part 1: Upward Toxicity Identification)',
+                risk_ranking: {
+                    severity_of_behavior: severityScore,
+                    duration_of_pattern: patternScore,
+                    exhaustion_of_remedies: exhaustionScore,
+                    manipulative_behavior: manipulationScore,
+                    overall_risk_score: Math.round(overallRisk * 10) / 10,
+                    alert_level: alertLevel,
+                    alert_emoji: alertEmoji
+                },
+                sections: surveyData.sections.map(s => ({
+                    id: s.id,
+                    title: s.title,
+                    answers: finalAnswers[s.id] || {}
+                })),
+                raw: finalAnswers
+            };
+
+            // Generate and download JSON file
+            const blob = new Blob([JSON.stringify(submission, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `managershield_risk_assessment_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Show Ranking Report Card
+            const container = document.getElementById('sectionsContainer');
+            container.innerHTML = `
+                <div style="text-align:center; padding:1rem 0;">
+                    <h2 style="color:#1a4b8c;">🏆 Upward Toxicity Risk Ranking Report</h2>
+                    <p style="font-size:1rem; color:#4a5c72;">Based on your responses (Section J), here is the "Rank My Workplace" alert level:</p>
+                    <div style="margin: 1.5rem 0;">
+                        <span class="rank-badge ${badgeClass}">${alertEmoji} ${alertLevel}</span>
+                    </div>
+                    <div class="rank-score-grid">
+                        <div class="rank-score-item"><div class="label">⚖️ Severity</div><div class="value">${severityScore.toFixed(1)} / 5</div></div>
+                        <div class="rank-score-item"><div class="label">📅 Pattern Duration</div><div class="value">${patternScore.toFixed(1)} / 5</div></div>
+                        <div class="rank-score-item"><div class="label">🛑 Remedies Exhausted</div><div class="value">${exhaustionScore.toFixed(1)} / 5</div></div>
+                        <div class="rank-score-item"><div class="label">🎭 Manipulative Behavior</div><div class="value">${manipulationScore.toFixed(1)} / 5</div></div>
+                    </div>
+                    <div style="background:#f9fafc; padding:1rem; border-radius:12px; max-width:600px; margin:1rem auto; text-align:left;">
+                        <strong>🔍 What this means:</strong>
+                        <ul style="margin-top:0.5rem; padding-left:1.2rem; color:#2c3e50;">
+                            <li><strong>≥ 4.0</strong> – Red: High Alert. Confirmed pattern requiring immediate disciplinary action.</li>
+                            <li><strong>2.5 – 3.9</strong> – Yellow: Moderate Risk. Concerning, may require targeted management intervention.</li>
+                            <li><strong>&lt; 2.5</strong> – Green: Low Risk. Likely isolated or a symptom of broader management issues.</li>
+                        </ul>
+                    </div>
+                    <p style="color:#4a5c72; font-size:0.9rem; margin-top:1rem;">
+                        Your full detailed responses have been downloaded as a JSON file.
+                   9>
+                    <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="location.reload()">Start New Survey</button>
+                </div>
+            `;
+            document.getElementById('navButtons').style.display = 'none';
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressText').textContent = '100%';
+        }
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            renderSection(0);
+
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                goToSection(currentSection - 1);
+            });
+            
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                if (validateCurrentSection()) {
+                    goToSection(currentSection + 1);
+                }
+            });
+            
+            document.getElementById('submitBtn').addEventListener('click', function() {
+                if (validateCurrentSection()) {
+                    if (confirm('Submit your survey and view the Upward Toxicity Risk Ranking Report?')) {
+                        submitSurvey();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
