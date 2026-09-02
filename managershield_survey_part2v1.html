@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ManagerShield – Part 2: Strategies to Document the Behavior</title>
+    <style>
+        /* ---------- Reset & Base ---------- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #1e2a3a;
+        }
+
+        /* ---------- Header ---------- */
+        .header {
+            background: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #1a4b8c;
+        }
+        .header .logo { font-size: 1.5rem; font-weight: 700; color: #1a4b8c; letter-spacing: -0.5px; }
+        .header .logo span { color: #d32f2f; font-weight: 300; }
+        .header .tagline {
+            font-size: 0.9rem; color: #4a5c72; font-weight: 300;
+            border-left: 2px solid #d32f2f; padding-left: 1rem;
+        }
+
+        /* ---------- Main Container ---------- */
+        .container { flex: 1; max-width: 980px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
+        .card {
+            background: #ffffff; border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            padding: 2rem 2rem 1.8rem; transition: opacity 0.2s;
+        }
+
+        /* Progress bar */
+        .progress-container { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+        .progress-bar { flex: 1; height: 6px; background: #e6eaef; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #1a4b8c; width: 0%; transition: width 0.3s ease; }
+        .progress-text { font-size: 0.85rem; font-weight: 600; color: #1a4b8c; min-width: 4rem; text-align: right; }
+
+        /* Section header */
+        .section-title { font-size: 1.6rem; font-weight: 600; color: #0b2a4a; margin-bottom: 0.25rem; }
+        .section-subtitle { font-size: 0.95rem; color: #4a5c72; margin-bottom: 1.5rem; border-bottom: 1px solid #eef2f7; padding-bottom: 0.75rem; }
+
+        /* Question group */
+        .question-group { display: flex; flex-direction: column; gap: 1.4rem; margin-bottom: 2rem; }
+        .question-item {
+            background: #f9fafc; border-radius: 10px; padding: 1rem 1.2rem;
+            border-left: 4px solid #1a4b8c; transition: all 0.2s;
+        }
+        .question-item .q-text { font-weight: 500; font-size: 1rem; color: #1e2a3a; margin-bottom: 0.6rem; }
+        .question-item .q-text .q-num { color: #1a4b8c; font-weight: 600; margin-right: 0.4rem; }
+
+        /* Likert radio group */
+        .likert-group { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem; padding-top: 0.2rem; }
+        .likert-option { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 50px; }
+        .likert-option input[type="radio"] { margin: 0 0 4px 0; width: 18px; height: 18px; cursor: pointer; accent-color: #1a4b8c; }
+        .likert-option label { font-size: 0.7rem; font-weight: 500; color: #2c3e50; text-align: center; line-height: 1.2; cursor: pointer; }
+        .likert-option input:checked + label { color: #1a4b8c; font-weight: 700; }
+
+        /* Textarea for open-ended */
+        .open-ended textarea {
+            width: 100%; padding: 0.7rem 1rem; border: 1px solid #d0d8e2; border-radius: 8px;
+            font-size: 0.95rem; font-family: inherit; resize: vertical; min-height: 80px;
+            transition: border 0.2s; background: #ffffff;
+        }
+        .open-ended textarea:focus { outline: none; border-color: #1a4b8c; box-shadow: 0 0 0 3px rgba(26, 75, 140, 0.15); }
+
+        /* Navigation buttons */
+        .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 1.8rem; gap: 1rem; flex-wrap: wrap; }
+        .btn {
+            padding: 0.7rem 2rem; font-size: 1rem; font-weight: 600; border: none; border-radius: 50px;
+            cursor: pointer; transition: background 0.2s, transform 0.1s; background: #eef2f7; color: #1e2a3a;
+        }
+        .btn-primary { background: #1a4b8c; color: #fff; }
+        .btn-primary:hover { background: #0f3a6b; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: #eef2f7; color: #1e2a3a; }
+        .btn-secondary:hover { background: #dce3ec; }
+        .btn-success { background: #2e7d32; color: #fff; }
+        .btn-success:hover { background: #1b5e20; }
+        .btn:active { transform: scale(0.96); }
+
+        /* ---------- Footer ---------- */
+        .footer {
+            background: #ffffff; border-top: 1px solid #e6eaef; padding: 1.2rem 2rem;
+            text-align: center; font-size: 0.85rem; color: #5a6c7e; margin-top: auto;
+        }
+        .footer strong { color: #1a4b8c; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 768px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 0.4rem; padding: 0.8rem 1.2rem; }
+            .header .tagline { border-left: none; padding-left: 0; }
+            .container { padding: 0 0.8rem; margin: 1rem auto; }
+            .card { padding: 1.2rem 1rem; }
+            .section-title { font-size: 1.3rem; }
+            .likert-group { flex-wrap: wrap; justify-content: flex-start; gap: 0.2rem; }
+            .likert-option { flex: 0 0 auto; min-width: 44px; }
+            .likert-option label { font-size: 0.6rem; }
+            .btn { padding: 0.5rem 1.2rem; font-size: 0.9rem; }
+        }
+        @media (max-width: 480px) {
+            .question-item { padding: 0.8rem; }
+            .likert-option { min-width: 36px; }
+            .likert-option label { font-size: 0.55rem; }
+            .nav-buttons { flex-direction: column; align-items: stretch; }
+            .btn { width: 100%; text-align: center; }
+        }
+
+        .section-wrapper { display: none; }
+        .section-wrapper.active { display: block; }
+        .question-item.required-missing { border-left-color: #d32f2f; background: #fff5f5; }
+        .error-message { color: #d32f2f; font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600; }
+
+        /* Ranking alert badge */
+        .rank-badge { display: inline-block; padding: 0.5rem 2rem; border-radius: 50px; font-weight: 700; font-size: 1.4rem; margin-top: 0.5rem; }
+        .rank-green { background: #e8f5e9; color: #1b5e20; border: 2px solid #4caf50; }
+        .rank-yellow { background: #fff8e1; color: #b7650e; border: 2px solid #ff9800; }
+        .rank-red { background: #ffebee; color: #b71c1c; border: 2px solid #f44336; }
+        .rank-score-grid { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0; }
+        .rank-score-item { background: #f9fafc; padding: 1rem 1.5rem; border-radius: 12px; min-width: 140px; }
+        .rank-score-item .label { font-size: 0.8rem; color: #4a5c72; }
+        .rank-score-item .value { font-size: 2rem; font-weight: 700; color: #1a4b8c; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="logo">Manager<span>Shield</span></div>
+        <div class="tagline">Investigation Portal · Part 2: Strategies to Document the Behavior</div>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <div class="container">
+        <div class="card" id="surveyCard">
+            <!-- Progress -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+
+            <!-- Dynamic sections -->
+            <div id="sectionsContainer"></div>
+
+            <!-- Navigation -->
+            <div class="nav-buttons" id="navButtons">
+                <button class="btn btn-secondary" id="prevBtn" disabled>← Previous</button>
+                <button class="btn btn-primary" id="nextBtn">Next →</button>
+                <button class="btn btn-success" id="submitBtn" style="display:none;">Submit & View Defensibility Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        &copy; 2025-2026 Beta ORI Inc. Canada. All Rights Reserved <strong>ManagerShield is a product of Beta ORI Inc. Canada</strong> — Every Conflict Investigated. Every Leader Protected.
+        <br />
+        <span style="font-size:0.75rem; opacity:0.7;">Confidential · Replaces "manager as victim" emotion with "manager as professional documenting risk."</span>
+    </footer>
+
+    <script>
+        // ============================================================
+        //  SURVEY DATA – PART 2 (100 Questions)
+        // ============================================================
+        const surveyData = {
+            sections: [
+                {
+                    id: 'A',
+                    title: 'The ABC Behavioral Tracking Model',
+                    subtitle: 'Documenting the Antecedent, Behavior, and Consequence to create an objective, legally defensible record.',
+                    questions: [
+                        { id: 'A1', text: 'What was the exact date, time, and location of the incident?', type: 'text' },
+                        { id: 'A2', text: 'What specific business task or event immediately preceded the behavior (Antecedent)?', type: 'text' },
+                        { id: 'A3', text: 'What was the exact, verbatim statement made by the employee (Behavior)?', type: 'text' },
+                        { id: 'A4', text: 'What specific physical actions did the employee take (Behavior)?', type: 'text' },
+                        { id: 'A5', text: 'Who else was present to witness the behavior?', type: 'text' },
+                        { id: 'A6', text: 'What was the immediate operational outcome of the employee’s action (Consequence)?', type: 'text' },
+                        { id: 'A7', text: 'How did the behavior disrupt the specific workflow or project timeline (Consequence)?', type: 'text' },
+                        { id: 'A8', text: 'Did the manager issue a clear, lawful directive that was refused? What was the wording?', type: 'text' },
+                        { id: 'A9', text: 'What was the employee’s stated reason for refusing the directive?', type: 'text' },
+                        { id: 'A10', text: 'Did the employee’s behavior involve shouting, and at what volume/duration?', type: 'text' },
+                        { id: 'A11', text: 'Did the behavior involve physical intimidation (invading personal space, slamming doors)?', type: 'likert' },
+                        { id: 'A12', text: 'Was the behavior sarcastic or passive-aggressive? What were the exact words used?', type: 'text' },
+                        { id: 'A13', text: 'Did the employee interrupt the manager repeatedly? How many times?', type: 'text' },
+                        { id: 'A14', text: 'What was the exact topic of discussion when the employee became hostile?', type: 'text' },
+                        { id: 'A15', text: 'Did the employee leave the premises or hang up the phone during a required business interaction?', type: 'likert' },
+                        { id: 'A16', text: 'What tools or resources did the employee withhold during the interaction?', type: 'text' },
+                        { id: 'A17', text: 'Was the behavior a response to constructive feedback? What was the feedback given?', type: 'text' },
+                        { id: 'A18', text: 'Did the employee issue threats during the incident? What were the exact threats?', type: 'text' },
+                        { id: 'A19', text: 'How did the manager respond in the moment to de-escalate the situation?', type: 'text' },
+                        { id: 'A20', text: 'Did the employee eventually comply with the directive, or was the task left incomplete?', type: 'text' },
+                        { id: 'A21', text: 'Did the behavior violate a specific, pre-communicated company policy? Which one?', type: 'text' },
+                        { id: 'A22', text: 'How long did the incident last?', type: 'text' },
+                        { id: 'A23', text: 'Did the employee display this behavior in front of clients, vendors, or external parties?', type: 'likert' },
+                        { id: 'A24', text: 'Did the employee send a follow-up email or message doubling down on their hostility?', type: 'likert' },
+                        { id: 'A25', text: 'Was there a digital record (email, Slack, Teams message) of the incident, and has it been saved?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'B',
+                    title: 'Impact Mapping (Business vs. Emotional)',
+                    subtitle: 'Quantifying the tangible business damage caused by the behavior to remove subjective emotional framing.',
+                    questions: [
+                        { id: 'B1', text: 'What specific financial cost resulted from the delay or error caused by the behavior?', type: 'text' },
+                        { id: 'B2', text: 'How many hours of additional labor were required to fix the resulting issue?', type: 'text' },
+                        { id: 'B3', text: 'Did the behavior result in a missed deadline? If so, what was the internal/external impact?', type: 'text' },
+                        { id: 'B4', text: 'Did the behavior lead to a client complaint or loss of business? Provide the client details.', type: 'text' },
+                        { id: 'B5', text: 'Did the behavior result in a safety violation or near-miss incident?', type: 'likert' },
+                        { id: 'B6', text: 'How did the employee’s behavior impact the productivity of the rest of the team?', type: 'text' },
+                        { id: 'B7', text: 'Did the behavior force other employees to take on the hostile employee’s workload?', type: 'likert' },
+                        { id: 'B8', text: 'Did the incident damage the manager’s ability to lead the team effectively? How?', type: 'text' },
+                        { id: 'B9', text: 'Did the behavior cause a project to go over budget? By how much?', type: 'text' },
+                        { id: 'B10', text: 'Was an external consultant or legal counsel required to mitigate the fallout of the behavior?', type: 'likert' },
+                        { id: 'B11', text: 'Did the behavior result in a formal grievance being filed by another employee?', type: 'likert' },
+                        { id: 'B12', text: 'What measurable drop in team morale or engagement can be linked to this behavior?', type: 'text' },
+                        { id: 'B13', text: 'Did the behavior result in a compliance or regulatory breach?', type: 'likert' },
+                        { id: 'B14', text: 'How did the incident affect the department’s quarterly KPIs?', type: 'text' },
+                        { id: 'B15', text: 'Did the manager have to cancel other business activities to manage the fallout of this incident?', type: 'likert' },
+                        { id: 'B16', text: 'Was access to critical systems or data blocked by the employee’s behavior?', type: 'likert' },
+                        { id: 'B17', text: 'Did the behavior force a change in the project scope or deliverables?', type: 'likert' },
+                        { id: 'B18', text: 'What was the reputational damage to the department or company?', type: 'text' },
+                        { id: 'B19', text: 'Did the incident require an all-hands meeting or emergency intervention by senior leadership?', type: 'likert' },
+                        { id: 'B20', text: 'What is the quantifiable cost of the manager’s time spent managing this specific conflict?', type: 'text' },
+                        { id: 'B21', text: 'Did the behavior invalidate previous work, requiring it to be completely redone?', type: 'likert' },
+                        { id: 'B22', text: 'Did the behavior prevent the team from launching a new product or initiative on time?', type: 'likert' },
+                        { id: 'B23', text: 'Was there an insurance or liability implication resulting from the employee’s refusal to follow protocol?', type: 'likert' },
+                        { id: 'B24', text: 'Did the behavior lead to a loss of intellectual property or critical data?', type: 'likert' },
+                        { id: 'B25', text: 'How did this incident specifically harm the company’s strategic objectives?', type: 'text' }
+                    ]
+                },
+                {
+                    id: 'C',
+                    title: 'The "Insubordination vs. Disagreement" Matrix',
+                    subtitle: 'Differentiating between protected professional pushback and actionable, deliberate obstruction.',
+                    questions: [
+                        { id: 'C1', text: 'Did the employee express a disagreement with the strategy, or did they refuse to execute it?', type: 'text' },
+                        { id: 'C2', text: 'At what point did the employee transition from offering alternative ideas to actively obstructing the workflow?', type: 'text' },
+                        { id: 'C3', text: 'Did the manager explicitly state that the discussion phase was over and execution was required?', type: 'likert' },
+                        { id: 'C4', text: 'Did the employee acknowledge the directive but then deliberately fail to execute it?', type: 'likert' },
+                        { id: 'C5', text: 'Was the directive within the employee’s documented job description and scope of employment?', type: 'likert' },
+                        { id: 'C6', text: 'Was the directive lawful, ethical, and aligned with company policy?', type: 'likert' },
+                        { id: 'C7', text: 'Did the employee use abusive language while refusing the directive, or was the refusal silent (work-to-rule)?', type: 'text' },
+                        { id: 'C8', text: 'Did the employee attempt to overrule the manager by citing a higher authority without grounds?', type: 'likert' },
+                        { id: 'C9', text: 'Did the employee explicitly state, "I am not going to do this"?', type: 'likert' },
+                        { id: 'C10', text: 'Did the employee set conditions for compliance (e.g., "I will only do this if you put it in writing and cc HR")?', type: 'likert' },
+                        { id: 'C11', text: 'Did the employee comply with the letter of the directive but intentionally violate the spirit of it?', type: 'likert' },
+                        { id: 'C12', text: 'Did the employee argue the directive in a public forum after it had been finalized in private?', type: 'likert' },
+                        { id: 'C13', text: 'Did the employee cite a misunderstanding of the directive as an excuse for non-compliance?', type: 'likert' },
+                        { id: 'C14', text: 'Was the directive time-sensitive, and did the employee use prolonged debate to run out the clock?', type: 'likert' },
+                        { id: 'C15', text: 'Did the employee refuse to acknowledge receipt of the directive?', type: 'likert' },
+                        { id: 'C16', text: 'Did the employee delegate the task to a junior employee against the manager’s instructions?', type: 'likert' },
+                        { id: 'C17', text: 'Did the employee modify the manager’s approved deliverable without authorization?', type: 'likert' },
+                        { id: 'C18', text: 'Did the employee refuse to provide a status update on a directive they disagreed with?', type: 'likert' },
+                        { id: 'C19', text: 'Did the employee claim the directive was "not their job" despite clear role definitions?', type: 'likert' },
+                        { id: 'C20', text: 'Did the employee file a formal complaint after being assigned the task, seemingly to stall execution?', type: 'likert' },
+                        { id: 'C21', text: 'Was the employee’s refusal based on a claimed safety or ethical violation? (If so, this is protected activity, not insubordination).', type: 'likert' },
+                        { id: 'C22', text: 'Did the manager clearly document the boundary between "permission to disagree" and "requirement to commit"?', type: 'likert' },
+                        { id: 'C23', text: 'Did the employee recruit others to refuse the directive as well?', type: 'likert' },
+                        { id: 'C24', text: 'Did the employee use profanity or personal attacks during the refusal?', type: 'likert' },
+                        { id: 'C25', text: 'Did the employee’s refusal create a safety risk for other employees?', type: 'likert' },
+                        { id: 'C26', text: 'Did the employee ignore a direct order from the manager during an emergency situation?', type: 'likert' },
+                        { id: 'C27', text: 'Did the employee challenge the manager’s legal authority to issue the directive?', type: 'likert' },
+                        { id: 'C28', text: 'Was the refusal part of a coordinated labor action, or an individual act of defiance?', type: 'text' },
+                        { id: 'C29', text: 'Did the employee apologize and comply later, or did they maintain their defiance?', type: 'text' },
+                        { id: 'C30', text: 'Did the employee’s defiance cause a breach of contract with a third party?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'D',
+                    title: 'Escalation Protocol Auditing',
+                    subtitle: 'Documenting the Manager\'s Response to ensure progressive discipline and objective handling.',
+                    questions: [
+                        { id: 'D1', text: 'Did the manager issue a verbal warning at the time of the incident? What were the exact words?', type: 'text' },
+                        { id: 'D2', text: 'Did the manager document the verbal warning in a follow-up email to the employee?', type: 'likert' },
+                        { id: 'D3', text: 'Did the manager clearly articulate the behavioral standard expected?', type: 'likert' },
+                        { id: 'D4', text: 'Did the manager offer the employee an opportunity to explain their behavior?', type: 'likert' },
+                        { id: 'D5', text: 'Did the manager apply progressive discipline (verbal -> written -> final) according to company policy?', type: 'likert' },
+                        { id: 'D6', text: 'Did the manager check their own emotional response and ensure documentation remained objective?', type: 'likert' },
+                        { id: 'D7', text: 'Did the manager consult HR before issuing a formal warning?', type: 'likert' },
+                        { id: 'D8', text: 'Did the manager fail to document previous incidents, thereby weakening the current case?', type: 'likert' },
+                        { id: 'D9', text: 'Has the manager been consistent in applying rules to this employee compared to the rest of the team?', type: 'likert' },
+                        { id: 'D10', text: 'Did the manager document the specific dates and times of all coaching sessions regarding this behavior?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'E',
+                    title: 'Email and Communication Metadata Analysis',
+                    subtitle: 'Analyzing digital footprints to prove patterns of obstruction, intimidation, or bad-faith communication.',
+                    questions: [
+                        { id: 'E1', text: 'What is the average response time of this employee to the manager’s emails compared to their response time to peers?', type: 'text' },
+                        { id: 'E2', text: 'Does the employee frequently use "Reply All" to publicly challenge the manager’s directives?', type: 'likert' },
+                        { id: 'E3', text: 'Does the employee inappropriately CC senior leadership or HR to intimidate the manager on routine matters?', type: 'likert' },
+                        { id: 'E4', text: 'Is there a pattern of the employee sending emails late at night or on weekends that demand immediate responses from the manager?', type: 'likert' },
+                        { id: 'E5', text: 'Does the employee use formatting (bolding, all-caps, red text) in emails to convey hostility?', type: 'likert' },
+                        { id: 'E6', text: 'Does the employee refuse to use the required project management software, insisting on communicating only through channels that are difficult to audit?', type: 'likert' },
+                        { id: 'E7', text: 'Are there instances of the employee "unsending" or deleting messages after a conflict?', type: 'likert' },
+                        { id: 'E8', text: 'Does the employee send emails that gaslight the manager (e.g., "As we discussed yesterday," when no such discussion occurred)?', type: 'likert' },
+                        { id: 'E9', text: 'Does the employee weaponize BCC to secretly share the manager’s communications with others?', type: 'likert' },
+                        { id: 'E10', text: 'Has IT pulled the metadata log to prove the employee received and read a directive they later claimed they "never saw"?', type: 'likert' }
+                    ]
+                }
+            ]
+        };
+
+        // ============================================================
+        //  STATE & SAFE STORAGE
+        // ============================================================
+        let currentSection = 0;
+        const totalSections = surveyData.sections.length;
+        let answers = {};
+
+        try {
+            const stored = localStorage.getItem('managershield_part2_answers');
+            if (stored) {
+                answers = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.warn("LocalStorage access denied or unavailable. Survey will function in-memory only.", e);
+        }
+
+        // ============================================================
+        //  RENDER & VALIDATION
+        // ============================================================
+        function renderSection(index) {
+            const section = surveyData.sections[index];
+            const container = document.getElementById('sectionsContainer');
+            if (!container) return;
+
+            let html = `<div class="section-wrapper active" data-section="${section.id}">`;
+            html += `<h2 class="section-title">Section ${section.id}: ${section.title}</h2>`;
+            html += `<p class="section-subtitle">${section.subtitle}</p>`;
+            html += `<div class="question-group">`;
+
+            section.questions.forEach((q, idx) => {
+                const qid = q.id;
+                const saved = (answers[section.id] && answers[section.id][qid]) || '';
+                const isLikert = q.type === 'likert';
+                html += `<div class="question-item" data-qid="${qid}">`;
+                html += `<div class="q-text"><span class="q-num">${idx+1}.</span> ${q.text}</div>`;
+
+                if (isLikert) {
+                    html += `<div class="likert-group">`;
+                    // Adapted labels for Documentation/Defensibility tracking
+                    const docOptions = [
+                        { value: '1', label: 'No / None' },
+                        { value: '2', label: 'Minimal / Unlikely' },
+                        { value: '3', label: 'Moderate / Unsure' },
+                        { value: '4', label: 'Significant / Likely' },
+                        { value: '5', label: 'Severe / Verified Yes' }
+                    ];
+                    docOptions.forEach(opt => {
+                        const checked = (saved === opt.value) ? 'checked' : '';
+                        html += `<div class="likert-option">`;
+                        html += `<input type="radio" name="${qid}" value="${opt.value}" id="${qid}_${opt.value}" ${checked} />`;
+                        html += `<label for="${qid}_${opt.value}">${opt.label}</label>`;
+                        html += `</div>`;
+                    });
+                    html += `</div>`;
+                } else {
+                    html += `<div class="open-ended">`;
+                    html += `<textarea name="${qid}" rows="3" placeholder="Provide specific details, dates, or verbatim quotes here...">${saved}</textarea>`;
+                    html += `</div>`;
+                }
+                html += `</div>`;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+
+            // Attach listeners
+            const sectionId = section.id;
+            document.querySelectorAll(`.section-wrapper[data-section="${sectionId}"] input[type="radio"]`).forEach(el => {
+                el.addEventListener('change', function() {
+                    if (!answers[sectionId]) answers[sectionId] = {};
+                    answers[sectionId][this.name] = this.value;
+                    saveToStorage();
+                    updateProgress();
+                });
+                // Clear error state on interaction
+                el.addEventListener('change', function() {
+                    const qItem = this.closest('.question-item');
+                    if (qItem) {
+                        qItem.classList.remove('required-missing');
+                        const errorMsg = qItem.querySelector('.error-message');
+                        if (errorMsg) errorMsg.remove();
+                    }
+                });
+            });
+            document.querySelectorAll(`.section-wrapper[data-section="${sectionId}"] textarea`).forEach(el => {
+                el.addEventListener('input', function() {
+                    if (!answers[sectionId]) answers[sectionId] = {};
+                    answers[sectionId][this.name] = this.value;
+                    saveToStorage();
+                    
+                    // Clear error state on interaction
+                    const qItem = this.closest('.question-item');
+                    if (qItem) {
+                        qItem.classList.remove('required-missing');
+                        const errorMsg = qItem.querySelector('.error-message');
+                        if (errorMsg) errorMsg.remove();
+                    }
+                });
+            });
+
+            updateProgress();
+            updateNavButtons();
+        }
+
+        function validateCurrentSection() {
+            const section = surveyData.sections[currentSection];
+            const sectionId = section.id;
+            const sectionAnswers = answers[sectionId] || {};
+            
+            let allAnswered = true;
+            let firstUnansweredQid = null;
+
+            section.questions.forEach(q => {
+                if (!sectionAnswers[q.id] || sectionAnswers[q.id].trim() === '') {
+                    allAnswered = false;
+                    if (!firstUnansweredQid) firstUnansweredQid = q.id;
+                }
+            });
+
+            // Clear previous errors
+            document.querySelectorAll('.required-missing').forEach(el => {
+                el.classList.remove('required-missing');
+                const errorMsg = el.querySelector('.error-message');
+                if (errorMsg) errorMsg.remove();
+            });
+
+            if (!allAnswered) {
+                const qElement = document.querySelector(`.question-item[data-qid="${firstUnansweredQid}"]`);
+                if (qElement) {
+                    qElement.classList.add('required-missing');
+                    qElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'error-message';
+                    errorMsg.textContent = '⚠️ Please answer this question before proceeding.';
+                    qElement.appendChild(errorMsg);
+                }
+                return false;
+            }
+            return true;
+        }
+
+        function updateProgress() {
+            const pct = Math.round(((currentSection + 1) / totalSections) * 100);
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressText').textContent = pct + '%';
+        }
+
+        function updateNavButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            prevBtn.disabled = (currentSection === 0);
+            if (currentSection === totalSections - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        function saveToStorage() {
+            try {
+                localStorage.setItem('managershield_part2_answers', JSON.stringify(answers));
+            } catch (e) {
+                console.warn("LocalStorage save failed.", e);
+            }
+        }
+
+        function goToSection(index) {
+            if (index < 0 || index >= totalSections) return;
+            currentSection = index;
+            renderSection(currentSection);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================================
+        //  SUBMIT & DEFENSIBILITY SCORING
+        // ============================================================
+        function submitSurvey() {
+            let finalAnswers = {};
+            try {
+                finalAnswers = JSON.parse(localStorage.getItem('managershield_part2_answers') || '{}');
+            } catch (e) {
+                finalAnswers = answers;
+            }
+            
+            // Calculate Defensibility Scores based on Sections D (Escalation) and E (Metadata)
+            const dAnswers = finalAnswers['D'] || {};
+            const eAnswers = finalAnswers['E'] || {};
+
+            let dScoreSum = 0, dCount = 0;
+            let eScoreSum = 0, eCount = 0;
+
+            for (let key in dAnswers) {
+                if (dAnswers[key]) { dScoreSum += parseFloat(dAnswers[key]); dCount++; }
+            }
+            for (let key in eAnswers) {
+                if (eAnswers[key]) { eScoreSum += parseFloat(eAnswers[key]); eCount++; }
+            }
+
+            const escalationScore = dCount > 0 ? (dScoreSum / dCount) : 0;
+            const metadataScore = eCount > 0 ? (eScoreSum / eCount) : 0;
+            const overallDefensibility = (escalationScore + metadataScore) / 2;
+
+            let alertLevel, badgeClass, alertEmoji;
+            if (overallDefensibility >= 4.0) {
+                alertLevel = '🟢 HIGHLY DEFENSIBLE – Robust Documentation';
+                badgeClass = 'rank-green';
+                alertEmoji = '✅';
+            } else if (overallDefensibility >= 2.5) {
+                alertLevel = '🟡 MODERATE DEFENSIBILITY – Gaps in Documentation';
+                badgeClass = 'rank-yellow';
+                alertEmoji = '⚠️';
+            } else {
+                alertLevel = '🔴 LOW DEFENSIBILITY – High Legal/HR Risk';
+                badgeClass = 'rank-red';
+                alertEmoji = '🚨';
+            }
+
+            const submission = {
+                timestamp: new Date().toISOString(),
+                survey_version: '2.0 (Part 2: Strategies to Document the Behavior)',
+                documentation_defensibility: {
+                    escalation_protocol_score: Math.round(escalationScore * 10) / 10,
+                    metadata_analysis_score: Math.round(metadataScore * 10) / 10,
+                    overall_defensibility_score: Math.round(overallDefensibility * 10) / 10,
+                    alert_level: alertLevel,
+                    alert_emoji: alertEmoji
+                },
+                sections: surveyData.sections.map(s => ({
+                    id: s.id,
+                    title: s.title,
+                    answers: finalAnswers[s.id] || {}
+                })),
+                raw: finalAnswers
+            };
+
+            // Generate and download JSON file
+            const blob = new Blob([JSON.stringify(submission, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `managershield_documentation_assessment_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Show Defensibility Report Card
+            const container = document.getElementById('sectionsContainer');
+            container.innerHTML = `
+                <div style="text-align:center; padding:1rem 0;">
+                    <h2 style="color:#1a4b8c;">🏆 Documentation Defensibility Report</h2>
+                    <p style="font-size:1rem; color:#4a5c72;">Based on your responses (Sections D & E), here is the legal/HR defensibility of your documentation:</p>
+                    <div style="margin: 1.5rem 0;">
+                        <span class="rank-badge ${badgeClass}">${alertEmoji} ${alertLevel}</span>
+                    </div>
+                    <div class="rank-score-grid">
+                        <div class="rank-score-item"><div class="label">📋 Escalation Protocol</div><div class="value">${escalationScore.toFixed(1)} / 5</div></div>
+                        <div class="rank-score-item"><div class="label">💻 Metadata Analysis</div><div class="value">${metadataScore.toFixed(1)} / 5</div></div>
+                        <div class="rank-score-item"><div class="label">⚖️ Overall Defensibility</div><div class="value">${overallDefensibility.toFixed(1)} / 5</div></div>
+                    </div>
+                    <div style="background:#f9fafc; padding:1rem; border-radius:12px; max-width:600px; margin:1rem auto; text-align:left;">
+                        <strong>🔍 What this means:</strong>
+                        <ul style="margin-top:0.5rem; padding-left:1.2rem; color:#2c3e50;">
+                            <li><strong>≥ 4.0</strong> – Green: Highly Defensible. Your documentation is objective, thorough, and ready for HR/Legal review.</li>
+                            <li><strong>2.5 – 3.9</strong> – Yellow: Moderate Defensibility. Concerning gaps exist. Supplement with additional witness statements or metadata before escalating.</li>
+                            <li><strong>&lt; 2.5</strong> – Red: High Risk. Documentation is largely emotional, incomplete, or inconsistent. Pause disciplinary action and consult HR immediately.</li>
+                        </ul>
+                    </div>
+                    <p style="color:#4a5c72; font-size:0.9rem; margin-top:1rem;">
+                        Your full detailed responses (all 100 questions) have been downloaded as a JSON file. 
+                        This replaces "manager as victim" emotion with "manager as professional documenting risk."
+                    </p>
+                    <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="location.reload()">Start New Assessment</button>
+                </div>
+            `;
+            document.getElementById('navButtons').style.display = 'none';
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressText').textContent = '100%';
+        }
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            renderSection(0);
+
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                goToSection(currentSection - 1);
+            });
+            
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                if (validateCurrentSection()) {
+                    goToSection(currentSection + 1);
+                }
+            });
+            
+            document.getElementById('submitBtn').addEventListener('click', function() {
+                if (validateCurrentSection()) {
+                    if (confirm('Submit your assessment and view the Documentation Defensibility Report?')) {
+                        submitSurvey();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
