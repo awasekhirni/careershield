@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CultureShield · Workplace Bullying & OCHI Assessment</title>
+    <style>
+        /* ---------- Reset & Base ---------- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f0f4fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #1e2a3a;
+        }
+
+        /* ---------- Header ---------- */
+        .header {
+            background: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #1a4b8c;
+        }
+        .header .logo { font-size: 1.6rem; font-weight: 700; color: #1a4b8c; letter-spacing: -0.5px; }
+        .header .logo span { color: #d32f2f; font-weight: 300; }
+        .header .tagline {
+            font-size: 0.9rem; color: #4a5c72; font-weight: 300;
+            border-left: 2px solid #d32f2f; padding-left: 1rem;
+        }
+
+        /* ---------- Main Container ---------- */
+        .container { flex: 1; max-width: 1080px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
+        .card {
+            background: #ffffff; border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            padding: 2rem 2rem 1.8rem; transition: opacity 0.2s;
+        }
+
+        /* Progress bar */
+        .progress-container { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+        .progress-bar { flex: 1; height: 6px; background: #e6eaef; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #1a4b8c, #2a6fc9); width: 0%; transition: width 0.3s ease; }
+        .progress-text { font-size: 0.85rem; font-weight: 600; color: #1a4b8c; min-width: 4rem; text-align: right; }
+
+        /* Section header */
+        .section-title { font-size: 1.5rem; font-weight: 600; color: #0b2a4a; margin-bottom: 0.25rem; }
+        .section-subtitle { font-size: 0.95rem; color: #4a5c72; margin-bottom: 1.5rem; border-bottom: 1px solid #eef2f7; padding-bottom: 0.75rem; }
+        .fact-ref { font-size: 0.8rem; color: #7a8a9e; font-weight: 400; margin-left: 0.5rem; }
+
+        /* Question group */
+        .question-group { display: flex; flex-direction: column; gap: 1.2rem; margin-bottom: 2rem; }
+        .question-item {
+            background: #f9fafc; border-radius: 10px; padding: 1rem 1.2rem;
+            border-left: 4px solid #1a4b8c; transition: all 0.2s;
+        }
+        .question-item .q-text { font-weight: 500; font-size: 0.95rem; color: #1e2a3a; margin-bottom: 0.6rem; }
+        .question-item .q-text .q-num { color: #1a4b8c; font-weight: 600; margin-right: 0.4rem; }
+
+        /* Likert radio group */
+        .likert-group { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem; padding-top: 0.2rem; }
+        .likert-option { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 55px; }
+        .likert-option input[type="radio"] { margin: 0 0 4px 0; width: 18px; height: 18px; cursor: pointer; accent-color: #1a4b8c; }
+        .likert-option label { font-size: 0.68rem; font-weight: 500; color: #2c3e50; text-align: center; line-height: 1.2; cursor: pointer; }
+        .likert-option input:checked + label { color: #1a4b8c; font-weight: 700; }
+
+        /* Textarea for open-ended */
+        .open-ended textarea {
+            width: 100%; padding: 0.7rem 1rem; border: 1px solid #d0d8e2; border-radius: 8px;
+            font-size: 0.95rem; font-family: inherit; resize: vertical; min-height: 70px;
+            transition: border 0.2s; background: #ffffff;
+        }
+        .open-ended textarea:focus { outline: none; border-color: #1a4b8c; box-shadow: 0 0 0 3px rgba(26, 75, 140, 0.15); }
+
+        /* Navigation buttons */
+        .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 1.8rem; gap: 1rem; flex-wrap: wrap; }
+        .btn {
+            padding: 0.7rem 2rem; font-size: 1rem; font-weight: 600; border: none; border-radius: 50px;
+            cursor: pointer; transition: background 0.2s, transform 0.1s; background: #eef2f7; color: #1e2a3a;
+        }
+        .btn-primary { background: #1a4b8c; color: #fff; }
+        .btn-primary:hover { background: #0f3a6b; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: #eef2f7; color: #1e2a3a; }
+        .btn-secondary:hover { background: #dce3ec; }
+        .btn-success { background: #2e7d32; color: #fff; }
+        .btn-success:hover { background: #1b5e20; }
+        .btn:active { transform: scale(0.96); }
+
+        /* ---------- Footer ---------- */
+        .footer {
+            background: #ffffff; border-top: 1px solid #e6eaef; padding: 1.2rem 2rem;
+            text-align: center; font-size: 0.85rem; color: #5a6c7e; margin-top: auto;
+        }
+        .footer strong { color: #1a4b8c; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 768px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 0.4rem; padding: 0.8rem 1.2rem; }
+            .header .tagline { border-left: none; padding-left: 0; }
+            .container { padding: 0 0.8rem; margin: 1rem auto; }
+            .card { padding: 1.2rem 1rem; }
+            .section-title { font-size: 1.2rem; }
+            .likert-group { flex-wrap: wrap; justify-content: flex-start; gap: 0.2rem; }
+            .likert-option { flex: 0 0 auto; min-width: 50px; }
+            .likert-option label { font-size: 0.58rem; }
+            .btn { padding: 0.5rem 1.2rem; font-size: 0.9rem; }
+        }
+        @media (max-width: 480px) {
+            .question-item { padding: 0.8rem; }
+            .likert-option { min-width: 40px; }
+            .likert-option label { font-size: 0.52rem; }
+            .nav-buttons { flex-direction: column; align-items: stretch; }
+            .btn { width: 100%; text-align: center; }
+        }
+
+        .section-wrapper { display: none; }
+        .section-wrapper.active { display: block; }
+        .question-item.required-missing { border-left-color: #d32f2f; background: #fff5f5; }
+        .error-message { color: #d32f2f; font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600; }
+
+        /* ---------- Report Card ---------- */
+        .report-card { margin-top: 0.5rem; }
+        .ochi-score { font-size: 3.5rem; font-weight: 700; text-align: center; margin: 0.5rem 0; }
+        .ochi-label { font-size: 1.1rem; text-align: center; color: #4a5c72; margin-bottom: 1rem; }
+        .ochi-band { display: inline-block; padding: 0.6rem 2.5rem; border-radius: 50px; font-weight: 700; font-size: 1.2rem; }
+        .band-critical { background: #ffebee; color: #b71c1c; border: 2px solid #f44336; }
+        .band-poor { background: #fff3e0; color: #e65100; border: 2px solid #ff9800; }
+        .band-moderate { background: #fff8e1; color: #b7650e; border: 2px solid #ffc107; }
+        .band-good { background: #e8f5e9; color: #1b5e20; border: 2px solid #4caf50; }
+        .band-excellent { background: #e0f2f1; color: #004d40; border: 2px solid #009688; }
+
+        .dimension-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .dimension-item { background: #f9fafc; border-radius: 10px; padding: 1rem; border-left: 4px solid #1a4b8c; }
+        .dimension-item .dim-name { font-size: 0.75rem; font-weight: 600; color: #4a5c72; text-transform: uppercase; letter-spacing: 0.5px; }
+        .dimension-item .dim-score { font-size: 1.8rem; font-weight: 700; color: #1a4b8c; margin: 0.2rem 0; }
+        .dimension-item .dim-bar { height: 6px; background: #e6eaef; border-radius: 10px; overflow: hidden; margin-top: 0.4rem; }
+        .dimension-item .dim-bar-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+        .dimension-item .dim-interp { font-size: 0.7rem; color: #5a6c7e; margin-top: 0.3rem; }
+
+        .submetric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.8rem; margin: 1rem 0; }
+        .submetric-item { background: #ffffff; border: 1px solid #e6eaef; border-radius: 10px; padding: 0.8rem; text-align: center; }
+        .submetric-item .sub-name { font-size: 0.7rem; color: #5a6c7e; font-weight: 500; }
+        .submetric-item .sub-score { font-size: 1.4rem; font-weight: 700; color: #1a4b8c; }
+
+        .action-list { text-align: left; max-width: 650px; margin: 1rem auto; background: #f9fafc; padding: 1rem 1.5rem; border-radius: 12px; }
+        .action-list li { margin-bottom: 0.4rem; color: #2c3e50; }
+
+        .btn-download { background: #1a4b8c; color: #fff; margin-right: 0.5rem; }
+        .btn-download:hover { background: #0f3a6b; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="logo">Culture<span>Shield</span></div>
+        <div class="tagline">Workplace Bullying Identification · Organizational Culture Health Index (OCHI)</div>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <div class="container">
+        <div class="card" id="surveyCard">
+            <!-- Progress -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+
+            <!-- Dynamic sections -->
+            <div id="sectionsContainer"></div>
+
+            <!-- Navigation -->
+            <div class="nav-buttons" id="navButtons">
+                <button class="btn btn-secondary" id="prevBtn" disabled>← Previous</button>
+                <button class="btn btn-primary" id="nextBtn">Next →</button>
+                <button class="btn btn-success" id="submitBtn" style="display:none;">Submit & View OCHI Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        &copy; 2025-2026 Beta ORI Inc. Canada. All Rights Reserved <strong>CultureShield is a product of Beta ORI Inc. Canada</strong> — Every Culture Measured. Every Leader Informed.
+        <br />
+        <span style="font-size:0.75rem; opacity:0.7;">Confidential · OCHI scores identify systemic toxicity and guide culture transformation</span>
+    </footer>
+
+    <script>
+        // ============================================================
+        //  SURVEY DATA — 105 QUESTIONS ACROSS 11 SECTIONS
+        //  Based on 101 Facts About Bullying (Kevorkian & D'Antona, 2008)
+        // ============================================================
+        const surveyData = {
+            sections: [
+                {
+                    id: 'S1', title: 'Bullying Reality & Prevalence',
+                    subtitle: 'Assessing the frequency and perceived severity of bullying behaviours in your organization.',
+                    factRefs: 'Facts #1–#10',
+                    questions: [
+                        { id: 'Q1.1', text: 'Have you ever been bullied at work?', type: 'likert' },
+                        { id: 'Q1.2', text: 'Have you ever bullied a coworker?', type: 'likert' },
+                        { id: 'Q1.3', text: 'Have you witnessed bullying at work?', type: 'likert' },
+                        { id: 'Q1.4', text: 'How big of a problem is bullying in your organization?', type: 'likert' },
+                        { id: 'Q1.5', text: 'When bullying happens, how often do leaders see it happening?', type: 'likert' },
+                        { id: 'Q1.6', text: 'How often do leaders intervene when they see bullying?', type: 'likert' },
+                        { id: 'Q1.7', text: 'Who is more likely to bully in your workplace?', type: 'likert' },
+                        { id: 'Q1.8', text: 'Have you seen women use social exclusion or gossip to hurt others at work?', type: 'likert' },
+                        { id: 'Q1.9', text: 'Do you think bullying is a problem in organizations worldwide?', type: 'likert' },
+                        { id: 'Q1.10', text: 'Have you seen early-career employees (interns, entry-level) being bullied?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'S2', title: 'Bullying Definitions & Types',
+                    subtitle: 'Understanding how well employees can identify different forms of bullying.',
+                    factRefs: 'Facts #11–#20',
+                    questions: [
+                        { id: 'Q2.1', text: 'Can you tell the difference between bullying and normal workplace conflict?', type: 'likert' },
+                        { id: 'Q2.2', text: 'Does workplace bullying involve an imbalance of power?', type: 'likert' },
+                        { id: 'Q2.3', text: 'Have you ever been called hurtful names at work?', type: 'likert' },
+                        { id: 'Q2.4', text: 'Do hurtful names affect your professional confidence?', type: 'likert' },
+                        { id: 'Q2.5', text: 'Have you noticed a colleague who seems withdrawn, depressed, or nervous?', type: 'likert' },
+                        { id: 'Q2.6', text: 'Have you noticed a colleague with unexplained stress symptoms (headaches, fatigue)?', type: 'likert' },
+                        { id: 'Q2.7', text: 'Do you know the difference between bullying and normal workplace disagreement?', type: 'likert' },
+                        { id: 'Q2.8', text: 'Is all workplace conflict bullying?', type: 'likert' },
+                        { id: 'Q2.9', text: 'Have you witnessed violence between family members of colleagues?', type: 'likert' },
+                        { id: 'Q2.10', text: 'Do you believe domestic violence affects workplace performance?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'S3', title: 'Victims & Vulnerability',
+                    subtitle: 'Identifying who is most at risk and the impact on victims.',
+                    factRefs: 'Facts #21–#31',
+                    questions: [
+                        { id: 'Q3.1', text: 'Have you been bullied because of your physical appearance?', type: 'likert' },
+                        { id: 'Q3.2', text: 'Have you been bullied because of your job title or status?', type: 'likert' },
+                        { id: 'Q3.3', text: 'Have you been bullied because of a disability or health condition?', type: 'likert' },
+                        { id: 'Q3.4', text: 'Have you heard homophobic remarks at work?', type: 'likert' },
+                        { id: 'Q3.5', text: 'Have you been targeted for not fitting gender stereotypes?', type: 'likert' },
+                        { id: 'Q3.6', text: 'Are you someone who is anxious, passive, or unassertive at work?', type: 'likert' },
+                        { id: 'Q3.7', text: 'Do you believe passive victims deserve the treatment they receive?', type: 'likert' },
+                        { id: 'Q3.8', text: 'Have you experienced or witnessed domestic violence affecting a colleague?', type: 'likert' },
+                        { id: 'Q3.9', text: 'Have you seen a colleague come to work with unexplained injuries?', type: 'likert' },
+                        { id: 'Q3.10', text: 'When you reported bullying, did a leader listen to you?', type: 'likert' },
+                        { id: 'Q3.11', text: 'Did HR/leadership document and investigate your bullying report?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'S4', title: 'Bullies & Their Characteristics',
+                    subtitle: 'Understanding the profile and motivations of workplace bullies.',
+                    factRefs: 'Facts #32–#41',
+                    questions: [
+                        { id: 'Q4.1', text: 'Do workplace bullies lack empathy for their victims?', type: 'likert' },
+                        { id: 'Q4.2', text: 'Do workplace bullies understand the pain they cause?', type: 'likert' },
+                        { id: 'Q4.3', text: 'Are workplace bullies usually popular or well-connected?', type: 'likert' },
+                        { id: 'Q4.4', text: 'Are workplace bullies psychologically strong?', type: 'likert' },
+                        { id: 'Q4.5', text: 'Have you seen workplace bullies engage in policy violations?', type: 'likert' },
+                        { id: 'Q4.6', text: 'Have you seen workplace bullies engage in substance abuse?', type: 'likert' },
+                        { id: 'Q4.7', text: 'Do overly aggressive leaders create bullying cultures?', type: 'likert' },
+                        { id: 'Q4.8', text: 'Do overly permissive leaders allow bullying to flourish?', type: 'likert' },
+                        { id: 'Q4.9', text: 'Can employees with high self-esteem be bullies?', type: 'likert' },
+                        { id: 'Q4.10', text: 'Do bullies tend to have more power, status, or seniority than their victims?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'S5', title: 'Bystanders & Their Role',
+                    subtitle: 'Evaluating whether employees feel empowered to intervene.',
+                    factRefs: 'Facts #42–#51',
+                    questions: [
+                        { id: 'Q5.1', text: 'Do employees who witness bullying become depressed or withdrawn?', type: 'likert' },
+                        { id: 'Q5.2', text: 'Do new employees who witness bullying become bullies themselves?', type: 'likert' },
+                        { id: 'Q5.3', text: 'Does witnessing repetitive bullying have long-term effects on bystanders?', type: 'likert' },
+                        { id: 'Q5.4', text: 'Do bystanders experience physical stress symptoms from witnessing bullying?', type: 'likert' },
+                        { id: 'Q5.5', text: 'Can peer bystanders reduce bullying by intervening?', type: 'likert' },
+                        { id: 'Q5.6', text: 'Do you know safe ways to help a victim of workplace bullying?', type: 'likert' },
+                        { id: 'Q5.7', text: 'Do bystanders feel uncomfortable when they witness verbal bullying?', type: 'likert' },
+                        { id: 'Q5.8', text: 'Do men feel indifferent when they witness bullying?', type: 'likert' },
+                        { id: 'Q5.9', text: 'Do bystanders feel uncomfortable because they don\'t know how to respond?', type: 'likert' },
+                        { id: 'Q5.10', text: 'Do bystanders feel a sense of social responsibility to help?', type: 'likert' },
+                        { id: 'Q5.11', text: 'Do bystanders fail to respond because they are afraid?', type: 'likert' },
+                        { id: 'Q5.12', text: 'Do you know how to assess if it\'s safe to intervene?', type: 'likert' },
+                        { id: 'Q5.13', text: 'Have you seen bystanders encourage bullying by laughing or agreeing?', type: 'likert' },
+                        { id: 'Q5.14', text: 'Have you seen bystanders join in the bullying?', type: 'likert' },
+                        { id: 'Q5.15', text: 'When bystanders see consequences for bullying, are they less likely to participate?', type: 'likert' },
+                        { id: 'Q5.16', text: 'Are consequences for bullying clear, consistent, and proportional?', type: 'likert' },
+                        { id: 'Q5.17', text: 'Are passive bystanders given tools to intervene in bullying situations?', type: 'likert' },
+                        { id: 'Q5.18', text: 'Do bystanders who have empathy for victims intervene more often?', type: 'likert' },
+                        { id: 'Q5.19', text: 'When bystanders look out for colleagues, does bullying decrease?', type: 'likert' },
+                        { id: 'Q5.20', text: 'Do you have at least one good ally at work?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'S6', title: 'Cyberbullying in the Workplace',
+                    subtitle: 'Assessing electronic harassment and digital safety.',
+                    factRefs: 'Facts #52–#61',
+                    questions: [
+                        { id: 'Q6.1', text: 'Have you experienced cyberbullying at work? (hostile emails, messages, online harassment)', type: 'likert' },
+                        { id: 'Q6.2', text: 'Does your organization monitor electronic communications for bullying?', type: 'likert' },
+                        { id: 'Q6.3', text: 'Do you know how to report cyberbullying at work?', type: 'likert' },
+                        { id: 'Q6.4', text: 'Does your organization have clear policies on electronic communication?', type: 'likert' },
+                        { id: 'Q6.5', text: 'Have you received hostile or inappropriate text messages from colleagues?', type: 'likert' },
+                        { id: 'Q6.6', text: 'Do you know that electronic messages can be saved and used as evidence?', type: 'likert' },
+                        { id: 'Q6.7', text: 'Do you share personal or sensitive information on workplace communication platforms?', type: 'likert' },
+                        { id: 'Q6.8', text: 'Does your organization monitor workplace communication platforms?', type: 'likert' },
+                        { id: 'Q6.9', text: 'Have you forwarded hostile messages or images about a colleague?', type: 'likert' },
+                        { id: 'Q6.10', text: 'Do you know that forwarding hostile messages makes you equally guilty?', type: 'likert' },
+                        { id: 'Q6.11', text: 'Has cyberbullying increased at your organization?', type: 'likert' },
+                        { id: 'Q6.12', text: 'Do you use instant messaging or collaboration platforms daily?', type: 'likert' },
+                        { id: 'Q6.13', text: 'Do employees realize the true impact of cyberbullying?', type: 'likert' },
+                        { id: 'Q6.14', text: 'Have you seen cyberbullying lead to serious consequences at work?', type: 'likert' },
+                        { id: 'Q6.15', text: 'Do you share confidential work information on unsecured platforms?', type: 'likert' },
+                        { id: 'Q6.16', text: 'Has your organization experienced data or privacy breaches?', type: 'likert' },
+                        { id: 'Q6.17', text: 'Is empathy key to eliminating cyberbullying?', type: 'likert' },
+                        { id: 'Q6.18', text: 'Do you understand that reading cyberbullying material makes you a participant?', type: 'likert' },
+                        { id: 'Q6.19', text: 'Does your organization have a policy on cyberbullying?', type: 'likert' },
+                        { id: 'Q6.20', text: 'Does your organization educate employees about cyberbullying?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'S7', title: 'Relational Bullying',
+                    subtitle: 'Detecting social manipulation, exclusion, and reputation damage.',
+                    factRefs: 'Facts #62–#71',
+                    questions: [
+                        { id: 'Q7.1', text: 'Have you experienced relational aggression at work? (manipulation, exclusion, rumors)', type: 'likert' },
+                        { id: 'Q7.2', text: 'Is relational aggression easy to recognize at work?', type: 'likert' },
+                        { id: 'Q7.3', text: 'How common is relational bullying at your organization?', type: 'likert' },
+                        { id: 'Q7.4', text: 'Are popular employees and bullies described similarly?', type: 'likert' },
+                        { id: 'Q7.5', text: 'Have you experienced relational bullying through electronic means?', type: 'likert' },
+                        { id: 'Q7.6', text: 'Does electronic communication make relational bullying easier?', type: 'likert' },
+                        { id: 'Q7.7', text: 'Have you experienced direct relational bullying? (direct exclusion, public criticism)', type: 'likert' },
+                        { id: 'Q7.8', text: 'Can direct relational bullying be addressed by going to the source?', type: 'likert' },
+                        { id: 'Q7.9', text: 'Have you experienced indirect relational bullying? (using others to hurt you)', type: 'likert' },
+                        { id: 'Q7.10', text: 'Is indirect relational bullying difficult to identify?', type: 'likert' },
+                        { id: 'Q7.11', text: 'Have you witnessed social aggression at work? (intimidation, social manipulation)', type: 'likert' },
+                        { id: 'Q7.12', text: 'Do men and women both engage in social aggression at work?', type: 'likert' },
+                        { id: 'Q7.13', text: 'Are men less likely to report bullying?', type: 'likert' },
+                        { id: 'Q7.14', text: 'Do men see relational aggression as a problem?', type: 'likert' },
+                        { id: 'Q7.15', text: 'Have you seen relational aggression escalate to physical aggression at work?', type: 'likert' },
+                        { id: 'Q7.16', text: 'Do leaders address relational bullying before it escalates?', type: 'likert' },
+                        { id: 'Q7.17', text: 'Are work allies a good defense against relational bullying?', type: 'likert' },
+                        { id: 'Q7.18', text: 'Do you have a trusted ally or close group of colleagues at work?', type: 'likert' },
+                        { id: 'Q7.19', text: 'Do words hurt as much as physical bullying?', type: 'likert' },
+                        { id: 'Q7.20', text: 'Can you tell the difference between workplace joking and bullying?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'S8', title: 'Media & Violence Literacy',
+                    subtitle: 'Understanding how exposure to violence affects workplace culture.',
+                    factRefs: 'Facts #72–#81',
+                    questions: [
+                        { id: 'Q8.1', text: 'Is there a connection between exposure to violence and workplace bullying?', type: 'likert' },
+                        { id: 'Q8.2', text: 'Does your organization limit exposure to violent media?', type: 'likert' },
+                        { id: 'Q8.3', text: 'How many hours of violent media do you consume per day?', type: 'likert' },
+                        { id: 'Q8.4', text: 'Have you witnessed thousands of violent acts through media?', type: 'likert' },
+                        { id: 'Q8.5', text: 'When the hero uses violence in media, is it portrayed as justified?', type: 'likert' },
+                        { id: 'Q8.6', text: 'Does your organization discuss that real violence hurts real people?', type: 'likert' },
+                        { id: 'Q8.7', text: 'Does media violence show consequences?', type: 'likert' },
+                        { id: 'Q8.8', text: 'Does media frequently reward aggression?', type: 'likert' },
+                        { id: 'Q8.9', text: 'Does media violence foster a culture of meanness?', type: 'likert' },
+                        { id: 'Q8.10', text: 'Does your organization stress kindness to counterbalance media meanness?', type: 'likert' },
+                        { id: 'Q8.11', text: 'Do you play violent video games?', type: 'likert' },
+                        { id: 'Q8.12', text: 'Do violent video games make players more hostile?', type: 'likert' },
+                        { id: 'Q8.13', text: 'Are the effects of media violence long-term?', type: 'likert' },
+                        { id: 'Q8.14', text: 'Have you had stress or sleep problems from media violence?', type: 'likert' },
+                        { id: 'Q8.15', text: 'Does your organization monitor media consumption in the workplace?', type: 'likert' },
+                        { id: 'Q8.16', text: 'Does your organization screen violent content on workplace devices?', type: 'likert' },
+                        { id: 'Q8.17', text: 'Can you tell the difference between make-believe and real-life violence?', type: 'likert' },
+                        { id: 'Q8.18', text: 'Does your organization explain the difference between fantasy and reality?', type: 'likert' },
+                        { id: 'Q8.19', text: 'Is empathy development crucial to understanding that violence hurts?', type: 'likert' },
+                        { id: 'Q8.20', text: 'Do you participate in community service or volunteering?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'S9', title: 'Consequences & Legal Ramifications',
+                    subtitle: 'Assessing policy, legal compliance, and organizational response.',
+                    factRefs: 'Facts #82–#91',
+                    questions: [
+                        { id: 'Q9.1', text: 'Do you know the difference between bullying, threats, and harassment at work?', type: 'likert' },
+                        { id: 'Q9.2', text: 'Is workplace bullying a legal term in your jurisdiction?', type: 'likert' },
+                        { id: 'Q9.3', text: 'Have you experienced sexual harassment at work?', type: 'likert' },
+                        { id: 'Q9.4', text: 'Does your organization have a sexual harassment policy?', type: 'likert' },
+                        { id: 'Q9.5', text: 'Have you heard homophobic remarks used as bullying at work?', type: 'likert' },
+                        { id: 'Q9.6', text: 'Does your organization protect employees from sexual orientation harassment?', type: 'likert' },
+                        { id: 'Q9.7', text: 'Have you experienced racial or ethnic bullying at work?', type: 'likert' },
+                        { id: 'Q9.8', text: 'Does your organization address racial discrimination?', type: 'likert' },
+                        { id: 'Q9.9', text: 'Have you been threatened at work?', type: 'likert' },
+                        { id: 'Q9.10', text: 'Does your organization take threats seriously?', type: 'likert' },
+                        { id: 'Q9.11', text: 'Do employees claim free speech protects bullying?', type: 'likert' },
+                        { id: 'Q9.12', text: 'Does your organization clarify that free speech doesn\'t protect bullying?', type: 'likert' },
+                        { id: 'Q9.13', text: 'Have you witnessed leaders bullying employees?', type: 'likert' },
+                        { id: 'Q9.14', text: 'Have you witnessed leaders bullying other leaders?', type: 'likert' },
+                        { id: 'Q9.15', text: 'Is your organization legally vulnerable for ignoring bullying?', type: 'likert' },
+                        { id: 'Q9.16', text: 'Does your organization document bullying incidents?', type: 'likert' },
+                        { id: 'Q9.17', text: 'Does your organization have clear anti-bullying policies?', type: 'likert' },
+                        { id: 'Q9.18', text: 'Are bullying policies consistently enforced?', type: 'likert' },
+                        { id: 'Q9.19', text: 'Can workplace bullying lead to a lifelong continuum of violence?', type: 'likert' },
+                        { id: 'Q9.20', text: 'Have you seen bullying lead to domestic violence or other serious consequences?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'S10', title: 'Best Practices & Prevention',
+                    subtitle: 'Measuring the organization\'s commitment to bullying prevention.',
+                    factRefs: 'Facts #92–#101',
+                    questions: [
+                        { id: 'Q10.1', text: 'Does your organization reward kindness and positive behavior?', type: 'likert' },
+                        { id: 'Q10.2', text: 'Do you feel recognized for being kind or helpful to colleagues?', type: 'likert' },
+                        { id: 'Q10.3', text: 'Does your organization have a research-based anti-bullying program?', type: 'likert' },
+                        { id: 'Q10.4', text: 'Does your organization focus on improving workplace climate?', type: 'likert' },
+                        { id: 'Q10.5', text: 'Does your organization use zero-tolerance policies for bullying?', type: 'likert' },
+                        { id: 'Q10.6', text: 'Are consequences for bullying proportional and educational?', type: 'likert' },
+                        { id: 'Q10.7', text: 'Does your organization avoid harsh discipline for bullying?', type: 'likert' },
+                        { id: 'Q10.8', text: 'Is discipline used as a teaching tool at your organization?', type: 'likert' },
+                        { id: 'Q10.9', text: 'Does your organization actively teach empathy?', type: 'likert' },
+                        { id: 'Q10.10', text: 'Do you understand how your actions affect colleagues?', type: 'likert' },
+                        { id: 'Q10.11', text: 'Does your organization protect victims from long-term effects of bullying?', type: 'likert' },
+                        { id: 'Q10.12', text: 'Does your organization help isolated employees build work relationships?', type: 'likert' },
+                        { id: 'Q10.13', text: 'Does your organization teach relationship-building skills?', type: 'likert' },
+                        { id: 'Q10.14', text: 'Do you know how to be a good work ally?', type: 'likert' },
+                        { id: 'Q10.15', text: 'Does your organization survey employees about bullying?', type: 'likert' },
+                        { id: 'Q10.16', text: 'Does your organization know where and when bullying happens?', type: 'likert' },
+                        { id: 'Q10.17', text: 'Does your organization have all 10 components of effective bullying prevention?', type: 'likert' },
+                        { id: 'Q10.18', text: 'Does your organization continue bullying prevention efforts over time?', type: 'likert' },
+                        { id: 'Q10.19', text: 'Is bullying prevention a community endeavor at your organization?', type: 'likert' },
+                        { id: 'Q10.20', text: 'Do all stakeholders (employees, leaders, HR, community) work together on bullying prevention?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'S11', title: 'Open-Ended Insights',
+                    subtitle: 'Share your qualitative experiences and suggestions (optional).',
+                    factRefs: 'Qualitative',
+                    questions: [
+                        { id: 'Q11.1', text: 'What suggestions do you have to improve workplace culture and reduce bullying?', type: 'text' },
+                        { id: 'Q11.2', text: 'Describe a time when you felt supported by leadership or colleagues.', type: 'text' },
+                        { id: 'Q11.3', text: 'Describe a time when you witnessed bullying and what happened.', type: 'text' },
+                        { id: 'Q11.4', text: 'What would make you feel safer at work?', type: 'text' },
+                        { id: 'Q11.5', text: 'What do you think causes workplace bullying?', type: 'text' }
+                    ]
+                }
+            ]
+        };
+
+        // ============================================================
+        //  OCHI DIMENSION DEFINITIONS (for scoring)
+        // ============================================================
+        const OCHI_DIMENSIONS = [
+            { id: 'OD1', name: 'Bullying Prevalence', weight: 0.15, inverted: true, questions: ['Q1.1','Q1.2','Q1.3','Q1.4','Q2.3','Q2.11','Q2.13','Q2.17','Q2.19','Q6.1','Q6.5','Q7.1','Q7.5','Q7.7','Q7.9','Q7.11'] },
+            { id: 'OD2', name: 'Leadership Intervention', weight: 0.12, inverted: false, questions: ['Q1.5','Q1.6','Q1.16','Q2.16','Q4.13','Q4.14','Q5.19','Q9.10','Q9.16','Q10.11'] },
+            { id: 'OD3', name: 'Bullying Literacy', weight: 0.10, inverted: false, questions: ['Q1.7','Q1.9','Q1.11','Q2.1','Q2.2','Q2.7','Q2.8','Q2.12','Q3.21','Q5.6','Q7.20','Q8.17','Q9.1'] },
+            { id: 'OD4', name: 'Victim Impact & Support', weight: 0.12, inverted: true, questions: ['Q1.12','Q1.13','Q3.1','Q3.2','Q3.3','Q3.4','Q3.5','Q3.6','Q3.10','Q3.11','Q3.20','Q6.13','Q6.14','Q9.3','Q9.5','Q9.7','Q9.9'] },
+            { id: 'OD5', name: 'Bystander Empowerment', weight: 0.10, inverted: false, questions: ['Q5.1','Q5.2','Q5.3','Q5.4','Q5.5','Q5.7','Q5.8','Q5.9','Q5.10','Q5.11','Q5.12','Q5.13','Q5.14','Q5.15','Q5.16','Q5.17','Q5.18','Q5.20'] },
+            { id: 'OD6', name: 'Cyberbullying Safety', weight: 0.08, inverted: false, questions: ['Q6.2','Q6.3','Q6.4','Q6.6','Q6.7','Q6.8','Q6.9','Q6.10','Q6.11','Q6.12','Q6.15','Q6.16','Q6.17','Q6.18','Q6.19','Q6.20'] },
+            { id: 'OD7', name: 'Relational Bullying Awareness', weight: 0.08, inverted: false, questions: ['Q7.2','Q7.3','Q7.4','Q7.6','Q7.8','Q7.10','Q7.12','Q7.13','Q7.14','Q7.15','Q7.16','Q7.17','Q7.18','Q7.19'] },
+            { id: 'OD8', name: 'Media & Violence Literacy', weight: 0.08, inverted: false, questions: ['Q8.1','Q8.2','Q8.3','Q8.4','Q8.5','Q8.6','Q8.7','Q8.8','Q8.9','Q8.10','Q8.11','Q8.12','Q8.13','Q8.14','Q8.15','Q8.16','Q8.18','Q8.19','Q8.20'] },
+            { id: 'OD9', name: 'Policy & Legal Compliance', weight: 0.09, inverted: false, questions: ['Q9.2','Q9.4','Q9.6','Q9.8','Q9.11','Q9.12','Q9.13','Q9.14','Q9.15','Q9.17','Q9.18','Q9.19','Q9.20'] },
+            { id: 'OD10', name: 'Prevention & Best Practices', weight: 0.08, inverted: false, questions: ['Q10.1','Q10.2','Q10.3','Q10.4','Q10.5','Q10.6','Q10.7','Q10.8','Q10.9','Q10.10','Q10.12','Q10.13','Q10.14','Q10.15','Q10.16','Q10.17','Q10.18','Q10.19','Q10.20'] }
+        ];
+
+        // ============================================================
+        //  STATE & SAFE STORAGE
+        // ============================================================
+        let currentSection = 0;
+        const totalSections = surveyData.sections.length;
+        let answers = {};
+
+        try {
+            const stored = localStorage.getItem('cultureshield_survey_answers');
+            if (stored) answers = JSON.parse(stored);
+        } catch (e) { console.warn("LocalStorage unavailable.", e); }
+
+        // ============================================================
+        //  RENDER & VALIDATION
+        // ============================================================
+        function renderSection(index) {
+            const section = surveyData.sections[index];
+            const container = document.getElementById('sectionsContainer');
+            if (!container) return;
+
+            let html = `<div class="section-wrapper active" data-section="${section.id}">`;
+            html += `<h2 class="section-title">Section ${section.id.replace('S','')}: ${section.title}</h2>`;
+            html += `<p class="section-subtitle">${section.subtitle} <span class="fact-ref">[${section.factRefs}]</span></p>`;
+            html += `<div class="question-group">`;
+
+            section.questions.forEach((q, idx) => {
+                const qid = q.id;
+                const saved = (answers[section.id] && answers[section.id][qid]) || '';
+                const isLikert = q.type === 'likert';
+                html += `<div class="question-item" data-qid="${qid}">`;
+                html += `<div class="q-text"><span class="q-num">${idx+1}.</span> ${q.text}</div>`;
+
+                if (isLikert) {
+                    html += `<div class="likert-group">`;
+                    const options = [
+                        { value: '1', label: 'Strongly Disagree' },
+                        { value: '2', label: 'Disagree' },
+                        { value: '3', label: 'Neutral' },
+                        { value: '4', label: 'Agree' },
+                        { value: '5', label: 'Strongly Agree' }
+                    ];
+                    options.forEach(opt => {
+                        const checked = (saved === opt.value) ? 'checked' : '';
+                        html += `<div class="likert-option">`;
+                        html += `<input type="radio" name="${qid}" value="${opt.value}" id="${qid}_${opt.value}" ${checked} />`;
+                        html += `<label for="${qid}_${opt.value}">${opt.label}</label>`;
+                        html += `</div>`;
+                    });
+                    html += `</div>`;
+                } else {
+                    html += `<div class="open-ended">`;
+                    html += `<textarea name="${qid}" rows="3" placeholder="Type your response here...">${saved}</textarea>`;
+                    html += `</div>`;
+                }
+                html += `</div>`;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+
+            // Attach listeners
+            const sectionId = section.id;
+            document.querySelectorAll(`.section-wrapper[data-section="${sectionId}"] input[type="radio"]`).forEach(el => {
+                el.addEventListener('change', function() {
+                    if (!answers[sectionId]) answers[sectionId] = {};
+                    answers[sectionId][this.name] = this.value;
+                    saveToStorage();
+                    updateProgress();
+                });
+            });
+            document.querySelectorAll(`.section-wrapper[data-section="${sectionId}"] textarea`).forEach(el => {
+                el.addEventListener('input', function() {
+                    if (!answers[sectionId]) answers[sectionId] = {};
+                    answers[sectionId][this.name] = this.value;
+                    saveToStorage();
+                });
+            });
+
+            updateProgress();
+            updateNavButtons();
+        }
+
+        function validateCurrentSection() {
+            const section = surveyData.sections[currentSection];
+            const sectionId = section.id;
+            const sectionAnswers = answers[sectionId] || {};
+            
+            let firstUnansweredQid = null;
+
+            // Only validate likert questions (text questions optional)
+            section.questions.forEach(q => {
+                if (q.type === 'likert' && (!sectionAnswers[q.id] || sectionAnswers[q.id].trim() === '')) {
+                    if (!firstUnansweredQid) firstUnansweredQid = q.id;
+                }
+            });
+
+            // Clear previous errors
+            document.querySelectorAll('.required-missing').forEach(el => {
+                el.classList.remove('required-missing');
+                const errorMsg = el.querySelector('.error-message');
+                if (errorMsg) errorMsg.remove();
+            });
+
+            if (firstUnansweredQid) {
+                const qElement = document.querySelector(`.question-item[data-qid="${firstUnansweredQid}"]`);
+                if (qElement) {
+                    qElement.classList.add('required-missing');
+                    qElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'error-message';
+                    errorMsg.textContent = '⚠️ Please answer this question before proceeding.';
+                    qElement.appendChild(errorMsg);
+                }
+                return false;
+            }
+            return true;
+        }
+
+        function updateProgress() {
+            const pct = Math.round(((currentSection + 1) / totalSections) * 100);
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressText').textContent = pct + '%';
+        }
+
+        function updateNavButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            prevBtn.disabled = (currentSection === 0);
+            if (currentSection === totalSections - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        function saveToStorage() {
+            try { localStorage.setItem('cultureshield_survey_answers', JSON.stringify(answers)); }
+            catch (e) { console.warn("Storage save failed.", e); }
+        }
+
+        function goToSection(index) {
+            if (index < 0 || index >= totalSections) return;
+            currentSection = index;
+            renderSection(currentSection);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================================
+        //  OCHI SCORING ENGINE
+        // ============================================================
+        function computeOCHI() {
+            const dimensionScores = {};
+            let allRaw = {};
+
+            // Flatten answers: create a map of questionId -> value (1-5)
+            Object.keys(answers).forEach(secId => {
+                Object.keys(answers[secId]).forEach(qid => {
+                    const val = parseFloat(answers[secId][qid]);
+                    if (!isNaN(val)) allRaw[qid] = val;
+                });
+            });
+
+            OCHI_DIMENSIONS.forEach(dim => {
+                let sum = 0, count = 0;
+                dim.questions.forEach(qid => {
+                    if (allRaw[qid] !== undefined) {
+                        let val = allRaw[qid];
+                        // For inverted dimensions, reverse the score (1->5, 5->1)
+                        if (dim.inverted) val = 6 - val;
+                        sum += val;
+                        count++;
+                    }
+                });
+                const avg = count > 0 ? (sum / count) : 0;
+                // Normalize to 0-100: ((avg - 1) / 4) * 100
+                const normalized = Math.round(((avg - 1) / 4) * 100);
+                dimensionScores[dim.id] = {
+                    name: dim.name,
+                    rawAvg: Math.round(avg * 100) / 100,
+                    score: Math.max(0, Math.min(100, normalized)),
+                    weight: dim.weight,
+                    inverted: dim.inverted
+                };
+            });
+
+            // Composite OCHI = weighted sum
+            let composite = 0;
+            OCHI_DIMENSIONS.forEach(dim => {
+                composite += (dimensionScores[dim.id].score * dim.weight);
+            });
+            composite = Math.round(composite * 10) / 10;
+
+            // Sub-metrics
+            const subMetrics = {
+                bullyingPrevalenceIndex: dimensionScores.OD1 ? dimensionScores.OD1.score : 0,
+                leadershipResponseIndex: dimensionScores.OD2 ? dimensionScores.OD2.score : 0,
+                psychologicalSafetyIndex: computePsychologicalSafety(allRaw),
+                reportingEfficacyIndex: computeReportingEfficacy(allRaw),
+                cultureHealthIndex: dimensionScores.OD10 ? dimensionScores.OD10.score : 0
+            };
+
+            return { composite, dimensionScores, subMetrics, allRaw };
+        }
+
+        function computePsychologicalSafety(raw) {
+            const qs = ['Q1.12','Q3.21','Q5.5','Q5.6','Q5.12','Q6.3','Q10.11'];
+            let sum = 0, count = 0;
+            qs.forEach(q => { if (raw[q] !== undefined) { sum += raw[q]; count++; } });
+            if (count === 0) return 0;
+            const avg = sum / count;
+            return Math.round(((avg - 1) / 4) * 100);
+        }
+
+        function computeReportingEfficacy(raw) {
+            const qs = ['Q3.10','Q3.11','Q6.3','Q9.10','Q9.16'];
+            let sum = 0, count = 0;
+            qs.forEach(q => { if (raw[q] !== undefined) { sum += raw[q]; count++; } });
+            if (count === 0) return 0;
+            const avg = sum / count;
+            return Math.round(((avg - 1) / 4) * 100);
+        }
+
+        function getBand(score) {
+            if (score <= 25) return { label: 'Critical', class: 'band-critical', color: '#f44336', emoji: '🔴', desc: 'Toxic culture. Bullying is pervasive and unaddressed. Immediate executive intervention required.' };
+            if (score <= 50) return { label: 'Poor', class: 'band-poor', color: '#ff9800', emoji: '🟠', desc: 'Significant culture issues. Bullying exists and responses are inconsistent.' };
+            if (score <= 70) return { label: 'Moderate', class: 'band-moderate', color: '#ffc107', emoji: '🟡', desc: 'Mixed culture. Some positive elements exist, but bullying persists in pockets.' };
+            if (score <= 85) return { label: 'Good', class: 'band-good', color: '#4caf50', emoji: '🟢', desc: 'Healthy culture. Bullying is addressed effectively. Continue reinforcing positive norms.' };
+            return { label: 'Excellent', class: 'band-excellent', color: '#009688', emoji: '🌟', desc: 'Exemplary culture. Psychological safety is high, bullying is rare, and respect is the norm.' };
+        }
+
+        function getDimensionColor(score) {
+            if (score <= 25) return '#f44336';
+            if (score <= 50) return '#ff9800';
+            if (score <= 70) return '#ffc107';
+            if (score <= 85) return '#4caf50';
+            return '#009688';
+        }
+
+        // ============================================================
+        //  SUBMIT & REPORT
+        // ============================================================
+        function submitSurvey() {
+            // Merge in-memory answers (in case localStorage was blocked)
+            const finalAnswers = { ...answers };
+
+            const { composite, dimensionScores, subMetrics, allRaw } = computeOCHI();
+            const band = getBand(composite);
+
+            // Build submission JSON
+            const submission = {
+                timestamp: new Date().toISOString(),
+                survey_version: '2.0 (Corporate Bullying & OCHI)',
+                based_on: '101 Facts About Bullying (Kevorkian & D\'Antona, 2008)',
+                ochi_score: composite,
+                ochi_band: band.label,
+                dimensions: dimensionScores,
+                sub_metrics: subMetrics,
+                sections: surveyData.sections.map(s => ({
+                    id: s.id,
+                    title: s.title,
+                    answers: finalAnswers[s.id] || {}
+                }))
+            };
+
+            // Download JSON
+            const blob = new Blob([JSON.stringify(submission, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cultureshield_ochi_report_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Build report card HTML
+            const container = document.getElementById('sectionsContainer');
+            let dimHtml = '';
+            OCHI_DIMENSIONS.forEach(dim => {
+                const ds = dimensionScores[dim.id];
+                const col = getDimensionColor(ds.score);
+                dimHtml += `
+                    <div class="dimension-item">
+                        <div class="dim-name">${dim.name}</div>
+                        <div class="dim-score" style="color:${col};">${ds.score}<span style="font-size:0.9rem; font-weight:400; color:#7a8a9e;">/100</span></div>
+                        <div class="dim-bar"><div class="dim-bar-fill" style="width:${ds.score}%; background:${col};"></div></div>
+                        <div class="dim-interp">Weight: ${(dim.weight*100).toFixed(0)}%</div>
+                    </div>
+                `;
+            });
+
+            let subHtml = `
+                <div class="submetric-item"><div class="sub-name">Bullying Prevalence Index</div><div class="sub-score">${subMetrics.bullyingPrevalenceIndex}</div></div>
+                <div class="submetric-item"><div class="sub-name">Leadership Response Index</div><div class="sub-score">${subMetrics.leadershipResponseIndex}</div></div>
+                <div class="submetric-item"><div class="sub-name">Psychological Safety Index</div><div class="sub-score">${subMetrics.psychologicalSafetyIndex}</div></div>
+                <div class="submetric-item"><div class="sub-name">Reporting Efficacy Index</div><div class="sub-score">${subMetrics.reportingEfficacyIndex}</div></div>
+                <div class="submetric-item"><div class="sub-name">Culture Health Index</div><div class="sub-score">${subMetrics.cultureHealthIndex}</div></div>
+            `;
+
+            // Action recommendations based on band
+            const actionMap = {
+                'Critical': ['Conduct emergency culture assessment','Implement immediate anonymous reporting hotline','Launch executive-led culture transformation task force','Review all pending bullying complaints','Consider external cultural audit'],
+                'Poor': ['Develop comprehensive anti-bullying policy','Train all leaders on intervention','Establish clear reporting channels','Implement bystander empowerment program','Conduct quarterly culture assessments'],
+                'Moderate': ['Identify and address bullying hotspots','Strengthen policy enforcement consistency','Expand bystander training','Improve reporting mechanisms','Enhance leadership accountability'],
+                'Good': ['Maintain and reinforce positive norms','Continue regular training and awareness','Share best practices across departments','Monitor for emerging issues','Recognize and reward positive behavior'],
+                'Excellent': ['Document and share best practices','Mentor other organizations','Continue innovation in prevention','Maintain vigilance for emerging issues','Celebrate and reward culture champions']
+            };
+            const actions = actionMap[band.label] || [];
+
+            let actionHtml = '<ul>';
+            actions.forEach(a => { actionHtml += `<li>${a}</li>`; });
+            actionHtml += '</ul>';
+
+            container.innerHTML = `
+                <div class="report-card" style="text-align:center;">
+                    <h2 style="color:#1a4b8c; margin-bottom:0.25rem;">📊 Organizational Culture Health Index (OCHI)</h2>
+                    <p style="font-size:0.95rem; color:#4a5c72;">Based on 105 questions across 10 dimensions · 101 Facts Framework</p>
+                    <div class="ochi-score" style="color:${band.color};">${composite}</div>
+                    <div class="ochi-label">out of 100</div>
+                    <div style="margin: 1rem 0;">
+                        <span class="ochi-band ${band.class}">${band.emoji} ${band.label}</span>
+                    </div>
+                    <p style="max-width:650px; margin:0.5rem auto; color:#2c3e50; font-size:0.95rem;">${band.desc}</p>
+
+                    <h3 style="color:#0b2a4a; margin:2rem 0 0.5rem; text-align:left;">📈 Dimension Scores</h3>
+                    <div class="dimension-grid">${dimHtml}</div>
+
+                    <h3 style="color:#0b2a4a; margin:1.5rem 0 0.5rem; text-align:left;">🔬 Sub-Metrics</h3>
+                    <div class="submetric-grid">${subHtml}</div>
+
+                    <h3 style="color:#0b2a4a; margin:1.5rem 0 0.5rem; text-align:left;">🎯 Recommended Actions</h3>
+                    <div class="action-list">${actionHtml}</div>
+
+                    <div style="margin-top:2rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+                        <button class="btn btn-download" onclick="downloadReport()">⬇ Download Full JSON Report</button>
+                        <button class="btn btn-primary" onclick="location.reload()">Start New Survey</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('navButtons').style.display = 'none';
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressText').textContent = '100%';
+
+            // Store submission globally for download
+            window._ochiSubmission = submission;
+        }
+
+        function downloadReport() {
+            if (!window._ochiSubmission) return;
+            const blob = new Blob([JSON.stringify(window._ochiSubmission, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cultureshield_ochi_report_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            renderSection(0);
+
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                goToSection(currentSection - 1);
+            });
+            
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                if (validateCurrentSection()) {
+                    goToSection(currentSection + 1);
+                }
+            });
+            
+            document.getElementById('submitBtn').addEventListener('click', function() {
+                if (validateCurrentSection()) {
+                    if (confirm('Submit your survey and view the Organizational Culture Health Index (OCHI) Report?')) {
+                        submitSurvey();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
