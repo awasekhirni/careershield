@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HR Integrity Audit Survey – Beta ORI Inc.</title>
+    <style>
+        /* ---------- Reset & Base ---------- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #1e2a3a;
+        }
+
+        /* ---------- Header ---------- */
+        .header {
+            background: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #1a4b8c;
+        }
+        .header .logo { font-size: 1.5rem; font-weight: 700; color: #1a4b8c; letter-spacing: -0.5px; }
+        .header .logo span { color: #d32f2f; font-weight: 300; }
+        .header .tagline {
+            font-size: 0.9rem; color: #4a5c72; font-weight: 300;
+            border-left: 2px solid #d32f2f; padding-left: 1rem;
+        }
+
+        /* ---------- Main Container ---------- */
+        .container { flex: 1; max-width: 980px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
+        .card {
+            background: #ffffff; border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            padding: 2rem 2rem 1.8rem; transition: opacity 0.2s;
+        }
+
+        /* Progress bar */
+        .progress-container { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+        .progress-bar { flex: 1; height: 6px; background: #e6eaef; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #1a4b8c; width: 0%; transition: width 0.3s ease; }
+        .progress-text { font-size: 0.85rem; font-weight: 600; color: #1a4b8c; min-width: 4rem; text-align: right; }
+
+        /* Section header */
+        .section-title { font-size: 1.6rem; font-weight: 600; color: #0b2a4a; margin-bottom: 0.25rem; }
+        .section-subtitle { font-size: 0.95rem; color: #4a5c72; margin-bottom: 1.5rem; border-bottom: 1px solid #eef2f7; padding-bottom: 0.75rem; }
+
+        /* Question group */
+        .question-group { display: flex; flex-direction: column; gap: 1.4rem; margin-bottom: 2rem; }
+        .question-item {
+            background: #f9fafc; border-radius: 10px; padding: 1rem 1.2rem;
+            border-left: 4px solid #1a4b8c; transition: all 0.2s;
+        }
+        .question-item .q-text { font-weight: 500; font-size: 1rem; color: #1e2a3a; margin-bottom: 0.6rem; }
+        .question-item .q-text .q-num { color: #1a4b8c; font-weight: 600; margin-right: 0.4rem; }
+
+        /* Likert radio group */
+        .likert-group { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.3rem; padding-top: 0.2rem; }
+        .likert-option { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 50px; }
+        .likert-option input[type="radio"] { margin: 0 0 4px 0; width: 18px; height: 18px; cursor: pointer; accent-color: #1a4b8c; }
+        .likert-option label { font-size: 0.7rem; font-weight: 500; color: #2c3e50; text-align: center; line-height: 1.2; cursor: pointer; }
+        .likert-option input:checked + label { color: #1a4b8c; font-weight: 700; }
+
+        /* Navigation buttons */
+        .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 1.8rem; gap: 1rem; flex-wrap: wrap; }
+        .btn {
+            padding: 0.7rem 2rem; font-size: 1rem; font-weight: 600; border: none; border-radius: 50px;
+            cursor: pointer; transition: background 0.2s, transform 0.1s; background: #eef2f7; color: #1e2a3a;
+        }
+        .btn-primary { background: #1a4b8c; color: #fff; }
+        .btn-primary:hover { background: #0f3a6b; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: #eef2f7; color: #1e2a3a; }
+        .btn-secondary:hover { background: #dce3ec; }
+        .btn-success { background: #2e7d32; color: #fff; }
+        .btn-success:hover { background: #1b5e20; }
+        .btn:active { transform: scale(0.96); }
+
+        /* ---------- Footer ---------- */
+        .footer {
+            background: #ffffff; border-top: 1px solid #e6eaef; padding: 1.2rem 2rem;
+            text-align: center; font-size: 0.85rem; color: #5a6c7e; margin-top: auto;
+        }
+        .footer strong { color: #1a4b8c; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 768px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 0.4rem; padding: 0.8rem 1.2rem; }
+            .header .tagline { border-left: none; padding-left: 0; }
+            .container { padding: 0 0.8rem; margin: 1rem auto; }
+            .card { padding: 1.2rem 1rem; }
+            .section-title { font-size: 1.3rem; }
+            .likert-group { flex-wrap: wrap; justify-content: flex-start; gap: 0.2rem; }
+            .likert-option { flex: 0 0 auto; min-width: 44px; }
+            .likert-option label { font-size: 0.6rem; }
+            .btn { padding: 0.5rem 1.2rem; font-size: 0.9rem; }
+        }
+        @media (max-width: 480px) {
+            .question-item { padding: 0.8rem; }
+            .likert-option { min-width: 36px; }
+            .likert-option label { font-size: 0.55rem; }
+            .nav-buttons { flex-direction: column; align-items: stretch; }
+            .btn { width: 100%; text-align: center; }
+        }
+
+        .section-wrapper { display: none; }
+        .section-wrapper.active { display: block; }
+        .question-item.required-missing { border-left-color: #d32f2f; background: #fff5f5; }
+        .error-message { color: #d32f2f; font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600; }
+
+        /* Ranking alert badge */
+        .rank-badge { display: inline-block; padding: 0.5rem 2rem; border-radius: 50px; font-weight: 700; font-size: 1.4rem; margin-top: 0.5rem; }
+        .rank-green { background: #e8f5e9; color: #1b5e20; border: 2px solid #4caf50; }
+        .rank-yellow { background: #fff8e1; color: #b7650e; border: 2px solid #ff9800; }
+        .rank-red { background: #ffebee; color: #b71c1c; border: 2px solid #f44336; }
+        .rank-score-grid { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0; }
+        .rank-score-item { background: #f9fafc; padding: 1rem 1.5rem; border-radius: 12px; min-width: 140px; text-align: center; }
+        .rank-score-item .label { font-size: 0.8rem; color: #4a5c72; }
+        .rank-score-item .value { font-size: 2rem; font-weight: 700; color: #1a4b8c; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="logo">HR<span>Integrity</span> Audit</div>
+        <div class="tagline">Comprehensive Compliance & Ethical Assessment Portal</div>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <div class="container">
+        <div class="card" id="surveyCard">
+            <!-- Progress -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+
+            <!-- Dynamic sections -->
+            <div id="sectionsContainer"></div>
+
+            <!-- Navigation -->
+            <div class="nav-buttons" id="navButtons">
+                <button class="btn btn-secondary" id="prevBtn" disabled>← Previous</button>
+                <button class="btn btn-primary" id="nextBtn">Next →</button>
+                <button class="btn btn-success" id="submitBtn" style="display:none;">Submit & View Audit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        &copy; 2024-2026 Beta ORI Inc. All Rights Reserved.
+        <br />
+        <span style="font-size:0.75rem; opacity:0.7;">Confidential · HR Integrity Audit Tool · Every Process Verified. Every Standard Upheld.</span>
+    </footer>
+
+    <script>
+        // ============================================================
+        //  SURVEY DATA (150 Questions across 15 Domains)
+        // ============================================================
+        const surveyData = {
+            sections: [
+                {
+                    id: 'A', title: '1. Recruitment & Selection',
+                    subtitle: 'Evaluating fairness, transparency, and bias prevention in hiring processes.',
+                    questions: [
+                        { id: 'A1', text: 'Are job descriptions clear, accurate, and free from discriminatory or biased language?', type: 'likert' },
+                        { id: 'A2', text: 'Is there a standardized, documented process for screening, interviewing, and selecting candidates?', type: 'likert' },
+                        { id: 'A3', text: 'Are background checks, credential verifications, and reference checks conducted consistently for all applicable roles?', type: 'likert' },
+                        { id: 'A4', text: 'Is there evidence or risk of nepotism, cronyism, or favoritism in the hiring process?', type: 'likert' },
+                        { id: 'A5', text: 'Are hiring managers and interviewers trained on unconscious bias and equitable hiring practices?', type: 'likert' },
+                        { id: 'A6', text: 'Are candidate evaluation criteria documented and applied consistently across all applicants?', type: 'likert' },
+                        { id: 'A7', text: 'Are recruitment sources diverse to ensure a broad, inclusive, and merit-based talent pool?', type: 'likert' },
+                        { id: 'A8', text: 'Is there a clear policy prohibiting the acceptance of gifts, kickbacks, or bribes from recruitment agencies?', type: 'likert' },
+                        { id: 'A9', text: 'Are internal job postings made available to all eligible employees for a minimum period before external sourcing?', type: 'likert' },
+                        { id: 'A10', text: 'Is candidate data handled in compliance with data privacy laws throughout the recruitment lifecycle?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'B', title: '2. Onboarding & Orientation',
+                    subtitle: 'Assessing the consistency and compliance of new hire integration.',
+                    questions: [
+                        { id: 'B1', text: 'Is there a standardized, documented onboarding checklist applied to all new hires?', type: 'likert' },
+                        { id: 'B2', text: 'Are new employees required to sign and acknowledge the Code of Conduct, anti-harassment, and data privacy policies within their first week?', type: 'likert' },
+                        { id: 'B3', text: 'Is the onboarding process consistently tracked in the HRIS for completion and compliance?', type: 'likert' },
+                        { id: 'B4', text: 'Are new hires clearly informed of reporting structures, grievance mechanisms, and whistleblower protections?', type: 'likert' },
+                        { id: 'B5', text: 'Is there a verification process to ensure all required legal, tax, and eligibility documents are accurately completed on day one?', type: 'likert' },
+                        { id: 'B6', text: 'Are IT access and system permissions granted based strictly on the principle of least privilege?', type: 'likert' },
+                        { id: 'B7', text: 'Is there a formal mentorship or buddy system to help new hires integrate ethically and culturally?', type: 'likert' },
+                        { id: 'B8', text: 'Are onboarding surveys conducted to identify gaps, inconsistencies, or ethical red flags in the new hire experience?', type: 'likert' },
+                        { id: 'B9', text: 'Is mandatory compliance training assigned and tracked as part of onboarding?', type: 'likert' },
+                        { id: 'B10', text: 'Are probationary periods clearly defined, documented, and evaluated objectively against pre-set criteria?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'C', title: '3. Compensation & Payroll Integrity',
+                    subtitle: 'Detecting payroll fraud, wage gaps, and compensation transparency issues.',
+                    questions: [
+                        { id: 'C1', text: 'Is there a documented, transparent compensation philosophy and salary band structure?', type: 'likert' },
+                        { id: 'C2', text: 'Are payroll records regularly audited to detect "ghost employees" or unauthorized master data changes?', type: 'likert' },
+                        { id: 'C3', text: 'Is overtime calculated, approved, and paid in strict accordance with local labor laws?', type: 'likert' },
+                        { id: 'C4', text: 'Are salary adjustments, promotions, and bonuses based on documented, objective performance metrics?', type: 'likert' },
+                        { id: 'C5', text: 'Is there a strict segregation of duties between payroll data entry, approval, and distribution?', type: 'likert' },
+                        { id: 'C6', text: 'Are periodic pay equity analyses conducted to identify and rectify demographic wage gaps?', type: 'likert' },
+                        { id: 'C7', text: 'Are employees provided with clear, itemized pay stubs explaining all gross pay, deductions, and net pay?', type: 'likert' },
+                        { id: 'C8', text: 'Is there a secure, confidential channel for employees to report payroll discrepancies without fear of reprisal?', type: 'likert' },
+                        { id: 'C9', text: 'Are executive compensation packages reviewed and approved by an independent compensation committee or board?', type: 'likert' },
+                        { id: 'C10', text: 'Are all statutory deductions accurately calculated and remitted to authorities on time?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'D', title: '4. Benefits Administration',
+                    subtitle: 'Ensuring fair, accurate, and fraud-resistant benefits management.',
+                    questions: [
+                        { id: 'D1', text: 'Are employees clearly informed of their benefits eligibility, costs, and enrollment deadlines?', type: 'likert' },
+                        { id: 'D2', text: 'Is there a process to verify the legitimacy of dependents or family members claimed for health insurance benefits?', type: 'likert' },
+                        { id: 'D3', text: 'Are benefits deductions accurately reflected in payroll without unauthorized or retroactive alterations?', type: 'likert' },
+                        { id: 'D4', text: 'Is there a clear policy and detection mechanism for preventing benefits fraud?', type: 'likert' },
+                        { id: 'D5', text: 'Are leave balances accurately tracked and regularly reconciled with employees?', type: 'likert' },
+                        { id: 'D6', text: 'Is the process for approving leaves of absence consistent, documented, and free from managerial bias?', type: 'likert' },
+                        { id: 'D7', text: 'Are retirement plan contributions remitted to providers within legally mandated timeframes?', type: 'likert' },
+                        { id: 'D8', text: 'Are departing employees proactively informed of their health insurance continuation rights?', type: 'likert' },
+                        { id: 'D9', text: 'Is there an annual audit of benefits utilization to detect anomalies, excessive claims, or patterns of abuse?', type: 'likert' },
+                        { id: 'D10', text: 'Are workplace accommodations for disabilities processed fairly, promptly, and in compliance with relevant laws?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'E', title: '5. Performance Management',
+                    subtitle: 'Evaluating objectivity, consistency, and fairness in performance evaluations.',
+                    questions: [
+                        { id: 'E1', text: 'Are performance evaluation criteria clearly defined, measurable, and communicated to employees in advance?', type: 'likert' },
+                        { id: 'E2', text: 'Is there evidence that performance reviews are conducted consistently and on schedule for all employees?', type: 'likert' },
+                        { id: 'E3', text: 'Are performance ratings calibrated across departments to prevent manager bias or grade inflation?', type: 'likert' },
+                        { id: 'E4', text: 'Is there a documented, accessible process for employees to appeal or dispute their performance ratings?', type: 'likert' },
+                        { id: 'E5', text: 'Are Performance Improvement Plans (PIPs) used constructively and documented with specific, measurable goals?', type: 'likert' },
+                        { id: 'E6', text: 'Is there a clear organizational separation between performance feedback and retaliatory actions?', type: 'likert' },
+                        { id: 'E7', text: 'Are managers trained on how to deliver objective, constructive, and legally compliant performance feedback?', type: 'likert' },
+                        { id: 'E8', text: 'Are self-evaluations encouraged and formally considered as part of the review process?', type: 'likert' },
+                        { id: 'E9', text: 'Is there a transparent mechanism to identify, document, and reward high performers?', type: 'likert' },
+                        { id: 'E10', text: 'Are performance records securely stored and accessible only to authorized HR personnel and direct management?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'F', title: '6. Employee Relations & Grievance Handling',
+                    subtitle: 'Assessing the safety, impartiality, and effectiveness of conflict resolution.',
+                    questions: [
+                        { id: 'F1', text: 'Is there a formal, multi-channel grievance procedure accessible to all employees at all levels?', type: 'likert' },
+                        { id: 'F2', text: 'Are all complaints investigated promptly, impartially, and by specially trained personnel?', type: 'likert' },
+                        { id: 'F3', text: 'Is there a strict, actively enforced policy against retaliation for employees who report grievances?', type: 'likert' },
+                        { id: 'F4', text: 'Are investigation findings documented thoroughly, objectively, and retained securely for legal compliance?', type: 'likert' },
+                        { id: 'F5', text: 'Is there a clear, safe escalation path for grievances that involve senior management or HR personnel?', type: 'likert' },
+                        { id: 'F6', text: 'Are employees informed of the outcome of their grievances to the maximum extent permissible by privacy laws?', type: 'likert' },
+                        { id: 'F7', text: 'Is there an anonymous reporting hotline or portal, ideally managed by an independent third party?', type: 'likert' },
+                        { id: 'F8', text: 'Are patterns of grievances analyzed regularly to identify systemic cultural or procedural issues?', type: 'likert' },
+                        { id: 'F9', text: 'Is mediation offered as a voluntary, confidential option for resolving interpersonal workplace conflicts?', type: 'likert' },
+                        { id: 'F10', text: 'Are disciplinary actions progressive, thoroughly documented, and applied consistently across all organizational levels?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'G', title: '7. Diversity, Equity, and Inclusion (DEI)',
+                    subtitle: 'Measuring commitment to a diverse, equitable, and inclusive workplace.',
+                    questions: [
+                        { id: 'G1', text: 'Does the organization have a written, publicly available DEI policy with measurable, time-bound goals?', type: 'likert' },
+                        { id: 'G2', text: 'Are DEI metrics tracked and reported to leadership regularly?', type: 'likert' },
+                        { id: 'G3', text: 'Is there a zero-tolerance policy for discrimination, harassment, bullying, and microaggressions?', type: 'likert' },
+                        { id: 'G4', text: 'Are Employee Resource Groups (ERGs) supported, respected, and funded equitably by the organization?', type: 'likert' },
+                        { id: 'G5', text: 'Is diversity and inclusion actively considered in succession planning and leadership development pipelines?', type: 'likert' },
+                        { id: 'G6', text: 'Are vendors, suppliers, and partners evaluated on their own DEI commitments and ethical practices?', type: 'likert' },
+                        { id: 'G7', text: 'Is mandatory DEI and anti-bias training provided to all employees, with specialized training for hiring managers?', type: 'likert' },
+                        { id: 'G8', text: 'Are workplace accommodations for religious practices and cultural observances respected and facilitated?', type: 'likert' },
+                        { id: 'G9', text: 'Is the physical and digital workplace fully accessible to individuals with disabilities?', type: 'likert' },
+                        { id: 'G10', text: 'Is exit interview data analyzed specifically for DEI-related red flags, trends, or systemic issues?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'H', title: '8. Health, Safety, and Wellbeing',
+                    subtitle: 'Verifying compliance with occupational health, safety, and mental wellbeing standards.',
+                    questions: [
+                        { id: 'H1', text: 'Is there a documented, up-to-date workplace health and safety policy compliant with local regulations?', type: 'likert' },
+                        { id: 'H2', text: 'Are regular safety audits, hazard assessments, and inspections conducted in all physical workspaces?', type: 'likert' },
+                        { id: 'H3', text: 'Is there a clear, regularly practiced emergency response and evacuation plan?', type: 'likert' },
+                        { id: 'H4', text: 'Are workplace injuries, illnesses, and near-misses reported, investigated, and logged accurately?', type: 'likert' },
+                        { id: 'H5', text: 'Is there a proactive program to address workplace stress, burnout, and mental health support?', type: 'likert' },
+                        { id: 'H6', text: 'Are employees trained on how to identify and report unsafe working conditions without fear of reprisal?', type: 'likert' },
+                        { id: 'H7', text: 'Is ergonomic equipment provided and assessed for employees upon request to prevent long-term injury?', type: 'likert' },
+                        { id: 'H8', text: 'Are substance abuse and workplace violence policies clearly communicated, understood, and enforced?', type: 'likert' },
+                        { id: 'H9', text: 'Is there a designated, trained Health and Safety representative or joint labor-management committee?', type: 'likert' },
+                        { id: 'H10', text: 'Are health, safety, and incident records maintained for the legally required retention periods?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'I', title: '9. Training & Development',
+                    subtitle: 'Assessing the equity, tracking, and effectiveness of employee development programs.',
+                    questions: [
+                        { id: 'I1', text: 'Is there a documented, data-driven process for identifying organizational and individual training needs?', type: 'likert' },
+                        { id: 'I2', text: 'Are compliance trainings tracked and enforced with 100% completion targets?', type: 'likert' },
+                        { id: 'I3', text: 'Is the training budget allocated and spent transparently and equitably across all departments?', type: 'likert' },
+                        { id: 'I4', text: 'Are external training providers and vendors vetted for quality, relevance, and ethical standards?', type: 'likert' },
+                        { id: 'I5', text: 'Is there a clear, fair policy on tuition reimbursement or professional development support?', type: 'likert' },
+                        { id: 'I6', text: 'Are training records accurately maintained, audited, and linked to individual employee profiles?', type: 'likert' },
+                        { id: 'I7', text: 'Is the effectiveness of training programs evaluated through post-training assessments or behavior change metrics?', type: 'likert' },
+                        { id: 'I8', text: 'Are high-potential employees identified through objective, bias-free criteria for leadership development?', type: 'likert' },
+                        { id: 'I9', text: 'Is cross-training encouraged to reduce single points of failure and mitigate ethical risks in critical roles?', type: 'likert' },
+                        { id: 'I10', text: 'Are employees protected from being penalized for taking time off to complete mandatory compliance training?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'J', title: '10. Data Privacy & HRIS Security',
+                    subtitle: 'Evaluating the protection, access control, and compliance of employee data systems.',
+                    questions: [
+                        { id: 'J1', text: 'Does the HR department strictly comply with relevant data privacy regulations (e.g., GDPR, CCPA)?', type: 'likert' },
+                        { id: 'J2', text: 'Is access to the HR Information System (HRIS) restricted based on strict Role-Based Access Controls (RBAC)?', type: 'likert' },
+                        { id: 'J3', text: 'Are employee personnel files stored securely, with encryption applied to sensitive digital data?', type: 'likert' },
+                        { id: 'J4', text: 'Is there a documented, enforced data retention and secure destruction policy for employee records?', type: 'likert' },
+                        { id: 'J5', text: 'Are employees informed via a clear privacy notice about what data is collected and how it is used?', type: 'likert' },
+                        { id: 'J6', text: 'Is there a formal process for employees to request access to, or correction of, their personal HR data?', type: 'likert' },
+                        { id: 'J7', text: 'Are HR systems regularly audited for unauthorized access attempts, anomalous logins, or data breaches?', type: 'likert' },
+                        { id: 'J8', text: 'Is Multi-Factor Authentication (MFA) required for all HR personnel accessing sensitive employee data?', type: 'likert' },
+                        { id: 'J9', text: 'Are third-party HR vendors rigorously vetted for data security and compliance?', type: 'likert' },
+                        { id: 'J10', text: 'Is there a tested incident response plan specifically tailored for HR data breaches?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'K', title: '11. Code of Conduct & Ethical Culture',
+                    subtitle: 'Measuring the enforcement and cultural integration of organizational ethics.',
+                    questions: [
+                        { id: 'K1', text: 'Is the Code of Conduct written in clear, accessible language and translated for non-native speakers if necessary?', type: 'likert' },
+                        { id: 'K2', text: 'Are all employees required to sign an acknowledgment of the Code of Conduct annually?', type: 'likert' },
+                        { id: 'K3', text: 'Is there a clear policy on conflicts of interest, including mandatory annual disclosures for key roles?', type: 'likert' },
+                        { id: 'K4', text: 'Are policies on gifts, entertainment, and hospitality clearly defined with specific, enforceable monetary limits?', type: 'likert' },
+                        { id: 'K5', text: 'Is there a strict policy prohibiting insider trading and the misuse of confidential company information?', type: 'likert' },
+                        { id: 'K6', text: 'Are ethical considerations and integrity explicitly integrated into performance evaluations?', type: 'likert' },
+                        { id: 'K7', text: 'Is there a mechanism for employees to seek ethical guidance or advice confidentially?', type: 'likert' },
+                        { id: 'K8', text: 'Are violations of the Code of Conduct investigated consistently and disciplined fairly, regardless of seniority?', type: 'likert' },
+                        { id: 'K9', text: 'Does executive leadership actively model, communicate, and resource the importance of ethical behavior?', type: 'likert' },
+                        { id: 'K10', text: 'Are ethical culture or "psychological safety" surveys conducted regularly to gauge employee sentiment?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'L', title: '12. Offboarding & Exit Management',
+                    subtitle: 'Ensuring secure, compliant, and insightful separation processes.',
+                    questions: [
+                        { id: 'L1', text: 'Is there a standardized offboarding checklist to ensure consistent, respectful treatment of all departing employees?', type: 'likert' },
+                        { id: 'L2', text: 'Are IT access, building badges, and system permissions revoked immediately upon termination?', type: 'likert' },
+                        { id: 'L3', text: 'Are final paychecks, severance, and accrued leave payouts processed in strict compliance with local labor laws?', type: 'likert' },
+                        { id: 'L4', text: 'Are exit interviews conducted by a neutral party to gather honest, uninhibited feedback?', type: 'likert' },
+                        { id: 'L5', text: 'Is exit interview data aggregated, anonymized, and analyzed to identify systemic retention or cultural issues?', type: 'likert' },
+                        { id: 'L6', text: 'Are departing employees formally reminded of their ongoing obligations regarding confidentiality and non-compete agreements?', type: 'likert' },
+                        { id: 'L7', text: 'Is company property systematically tracked, audited, and recovered?', type: 'likert' },
+                        { id: 'L8', text: 'Is there a clear, legally compliant policy for handling reference and employment verification requests?', type: 'likert' },
+                        { id: 'L9', text: 'Are voluntary resignations investigated for underlying issues like managerial misconduct or burnout?', type: 'likert' },
+                        { id: 'L10', text: 'Is the offboarding process reviewed periodically by legal and HR to minimize legal and security risks?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'M', title: '13. Labor Law & Regulatory Compliance',
+                    subtitle: 'Verifying adherence to local, state, and federal employment laws.',
+                    questions: [
+                        { id: 'M1', text: 'Are all required labor law posters displayed prominently in the workplace or digitally accessible?', type: 'likert' },
+                        { id: 'M2', text: 'Is employee classification regularly audited for legal compliance?', type: 'likert' },
+                        { id: 'M3', text: 'Are workplace policies updated promptly when local, state, or federal labor laws change?', type: 'likert' },
+                        { id: 'M4', text: 'Is the organization fully compliant with minimum wage, prevailing wage, and equal pay legislation?', type: 'likert' },
+                        { id: 'M5', text: 'Are family and medical leave requests processed in strict adherence to legal requirements?', type: 'likert' },
+                        { id: 'M6', text: 'Is there a documented, lawful process for handling union relations or collective bargaining agreements?', type: 'likert' },
+                        { id: 'M7', text: 'Are work eligibility verification forms completed, audited, and stored correctly within legal timeframes?', type: 'likert' },
+                        { id: 'M8', text: 'Is the organization strictly compliant with child labor laws and restrictions on minor employees?', type: 'likert' },
+                        { id: 'M9', text: 'Are mandatory regulatory reporting requirements filed accurately and on time?', type: 'likert' },
+                        { id: 'M10', text: 'Does the organization maintain a centralized register of all HR-related audits, inspections, or regulatory inquiries?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'N', title: '14. Remote Work & Flexible Arrangements',
+                    subtitle: 'Assessing equity, security, and compliance in distributed work environments.',
+                    questions: [
+                        { id: 'N1', text: 'Is there a formal, written remote work policy outlining expectations, eligibility, and security requirements?', type: 'likert' },
+                        { id: 'N2', text: 'Are remote employees evaluated on output and results rather than hours logged?', type: 'likert' },
+                        { id: 'N3', text: 'Is there a clear, fair policy on reimbursing remote work expenses?', type: 'likert' },
+                        { id: 'N4', text: 'Are data security protocols strictly enforced for remote workers?', type: 'likert' },
+                        { id: 'N5', text: 'Is there a proactive mechanism to ensure remote workers have equal access to career development and promotion opportunities?', type: 'likert' },
+                        { id: 'N6', text: 'Are working hours and "right-to-disconnect" policies respected to prevent remote employee burnout?', type: 'likert' },
+                        { id: 'N7', text: 'Is there a process for addressing health, safety, and ergonomic concerns in a remote worker’s home office?', type: 'likert' },
+                        { id: 'N8', text: 'Are flexible work arrangements granted fairly, without bias toward specific demographics?', type: 'likert' },
+                        { id: 'N9', text: 'Is cross-border remote work governed by clear tax, legal, and permanent establishment compliance checks?', type: 'likert' },
+                        { id: 'N10', text: 'Are remote team-building and inclusion initiatives actively funded to prevent isolation?', type: 'likert' }
+                    ]
+                },
+                {
+                    id: 'O', title: '15. HR Governance, Policy, & Audit Readiness',
+                    subtitle: 'Evaluating the structural integrity, documentation, and continuous improvement of HR operations.',
+                    questions: [
+                        { id: 'O1', text: 'Is there a centralized, easily accessible, and version-controlled repository for all current HR policies?', type: 'likert' },
+                        { id: 'O2', text: 'Are HR policies reviewed and updated at least annually by HR, legal, and compliance teams?', type: 'likert' },
+                        { id: 'O3', text: 'Is there a clear organizational chart showing reporting lines and segregation of duties within the HR department?', type: 'likert' },
+                        { id: 'O4', text: 'Are HR staff provided with ongoing professional development, certification support, and ethics training?', type: 'likert' },
+                        { id: 'O5', text: 'Is there a documented business continuity and disaster recovery plan specifically for HR operations?', type: 'likert' },
+                        { id: 'O6', text: 'Are internal HR audits conducted periodically, with findings reported to senior management?', type: 'likert' },
+                        { id: 'O7', text: 'Is there a formal process for tracking, remediating, and closing findings from previous compliance audits?', type: 'likert' },
+                        { id: 'O8', text: 'Are key HR metrics regularly reported to leadership for strategic decision-making?', type: 'likert' },
+                        { id: 'O9', text: 'Is there a clear policy governing the use of AI or automated tools in HR decision-making to prevent algorithmic bias?', type: 'likert' },
+                        { id: 'O10', text: 'Does the HR department have a designated compliance officer or point of contact for integrity-related matters?', type: 'likert' }
+                    ]
+                }
+            ]
+        };
+
+        // ============================================================
+        //  STATE & SAFE STORAGE
+        // ============================================================
+        let currentSection = 0;
+        const totalSections = surveyData.sections.length;
+        let answers = {};
+
+        try {
+            const stored = localStorage.getItem('hr_integrity_audit_answers');
+            if (stored) {
+                answers = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.warn("LocalStorage access denied or unavailable. Survey will function in-memory only.", e);
+        }
+
+        // ============================================================
+        //  RENDER & VALIDATION
+        // ============================================================
+        function renderSection(index) {
+            const section = surveyData.sections[index];
+            const container = document.getElementById('sectionsContainer');
+            if (!container) return;
+
+            let html = `<div class="section-wrapper active" data-section="${section.id}">`;
+            html += `<h2 class="section-title">${section.title}</h2>`;
+            html += `<p class="section-subtitle">${section.subtitle}</p>`;
+            html += `<div class="question-group">`;
+
+            section.questions.forEach((q, idx) => {
+                const qid = q.id;
+                const saved = (answers[section.id] && answers[section.id][qid]) || '';
+                html += `<div class="question-item" data-qid="${qid}">`;
+                html += `<div class="q-text"><span class="q-num">${idx+1}.</span> ${q.text}</div>`;
+                html += `<div class="likert-group">`;
+                
+                const options = [
+                    { value: '1', label: 'Strongly Disagree' },
+                    { value: '2', label: 'Disagree' },
+                    { value: '3', label: 'Neutral' },
+                    { value: '4', label: 'Agree' },
+                    { value: '5', label: 'Strongly Agree' }
+                ];
+
+                options.forEach(opt => {
+                    const checked = (saved === opt.value) ? 'checked' : '';
+                    html += `<div class="likert-option">`;
+                    html += `<input type="radio" name="${qid}" value="${opt.value}" id="${qid}_${opt.value}" ${checked} />`;
+                    html += `<label for="${qid}_${opt.value}">${opt.label}</label>`;
+                    html += `</div>`;
+                });
+                html += `</div></div>`;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+
+            // Attach listeners
+            const sectionId = section.id;
+            document.querySelectorAll(`.section-wrapper[data-section="${sectionId}"] input[type="radio"]`).forEach(el => {
+                el.addEventListener('change', function() {
+                    if (!answers[sectionId]) answers[sectionId] = {};
+                    answers[sectionId][this.name] = this.value;
+                    saveToStorage();
+                    updateProgress();
+                });
+            });
+
+            updateProgress();
+            updateNavButtons();
+        }
+
+        function validateCurrentSection() {
+            const section = surveyData.sections[currentSection];
+            const sectionId = section.id;
+            const sectionAnswers = answers[sectionId] || {};
+            
+            let allAnswered = true;
+            let firstUnansweredQid = null;
+
+            section.questions.forEach(q => {
+                if (!sectionAnswers[q.id] || sectionAnswers[q.id].trim() === '') {
+                    allAnswered = false;
+                    if (!firstUnansweredQid) firstUnansweredQid = q.id;
+                }
+            });
+
+            document.querySelectorAll('.required-missing').forEach(el => {
+                el.classList.remove('required-missing');
+                const errorMsg = el.querySelector('.error-message');
+                if (errorMsg) errorMsg.remove();
+            });
+
+            if (!allAnswered) {
+                const qElement = document.querySelector(`.question-item[data-qid="${firstUnansweredQid}"]`);
+                if (qElement) {
+                    qElement.classList.add('required-missing');
+                    qElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'error-message';
+                    errorMsg.textContent = '⚠️ Please answer this question before proceeding.';
+                    qElement.appendChild(errorMsg);
+                }
+                return false;
+            }
+            return true;
+        }
+
+        function updateProgress() {
+            const pct = Math.round(((currentSection + 1) / totalSections) * 100);
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressText').textContent = pct + '%';
+        }
+
+        function updateNavButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            prevBtn.disabled = (currentSection === 0);
+            if (currentSection === totalSections - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        function saveToStorage() {
+            try {
+                localStorage.setItem('hr_integrity_audit_answers', JSON.stringify(answers));
+            } catch (e) {
+                console.warn("LocalStorage save failed.", e);
+            }
+        }
+
+        function goToSection(index) {
+            if (index < 0 || index >= totalSections) return;
+            currentSection = index;
+            renderSection(currentSection);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================================
+        //  SUBMIT & SCORING LOGIC
+        // ============================================================
+        function submitSurvey() {
+            let finalAnswers = {};
+            try {
+                finalAnswers = JSON.parse(localStorage.getItem('hr_integrity_audit_answers') || '{}');
+            } catch (e) {
+                finalAnswers = answers;
+            }
+            
+            let totalScore = 0;
+            let totalAnswered = 0;
+            let highRiskCount = 0; // Scores of 4 or 5 indicate agreement with risk factors
+
+            surveyData.sections.forEach(section => {
+                section.questions.forEach(q => {
+                    const val = parseInt(finalAnswers[section.id]?.[q.id]);
+                    if (!isNaN(val)) {
+                        totalScore += val;
+                        totalAnswered++;
+                        if (val >= 4) {
+                            highRiskCount++;
+                        }
+                    }
+                });
+            });
+
+            const riskExposurePercentage = totalAnswered > 0 ? Math.round((highRiskCount / totalAnswered) * 100) : 0;
+            const averageScore = totalAnswered > 0 ? (totalScore / totalAnswered).toFixed(2) : 0;
+
+            let alertLevel, badgeClass, alertEmoji, recommendation;
+            
+            if (riskExposurePercentage >= 30) {
+                alertLevel = 'HIGH RISK – Critical Integrity Gaps Detected';
+                badgeClass = 'rank-red';
+                alertEmoji = '🔴';
+                recommendation = 'Immediate remediation required. Multiple high-risk indicators suggest systemic vulnerabilities in HR compliance and ethical controls. Initiate a formal internal investigation and prioritize policy enforcement.';
+            } else if (riskExposurePercentage >= 15) {
+                alertLevel = 'MODERATE RISK – Actionable Compliance Gaps';
+                badgeClass = 'rank-yellow';
+                alertEmoji = '🟡';
+                recommendation = 'Targeted intervention needed. While foundational controls exist, specific domains show elevated risk factors. Develop a 90-day remediation plan for flagged areas.';
+            } else {
+                alertLevel = 'LOW RISK – Strong Integrity & Compliance Controls';
+                badgeClass = 'rank-green';
+                alertEmoji = '🟢';
+                recommendation = 'The organization demonstrates robust HR integrity controls. Continue routine monitoring, annual policy reviews, and proactive compliance training to maintain this standard.';
+            }
+
+            const submission = {
+                timestamp: new Date().toISOString(),
+                survey_version: '1.0 (HR Integrity Audit - 150 Points)',
+                scoring_summary: {
+                    total_questions_answered: totalAnswered,
+                    average_response_index: averageScore,
+                    high_risk_indicators_count: highRiskCount,
+                    risk_exposure_percentage: riskExposurePercentage + '%',
+                    alert_level: alertLevel
+                },
+                sections: surveyData.sections.map(s => ({
+                    id: s.id,
+                    title: s.title,
+                    answers: finalAnswers[s.id] || {}
+                })),
+                raw: finalAnswers
+            };
+
+            // Generate and download JSON file
+            const blob = new Blob([JSON.stringify(submission, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `hr_integrity_audit_report_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Show Ranking Report Card
+            const container = document.getElementById('sectionsContainer');
+            container.innerHTML = `
+                <div style="text-align:center; padding:1rem 0;">
+                    <h2 style="color:#1a4b8c;">🏆 HR Integrity Audit Ranking Report</h2>
+                    <p style="font-size:1rem; color:#4a5c72; max-width: 700px; margin: 0.5rem auto;">Based on your responses across all 150 assessment points, here is the organizational integrity risk exposure:</p>
+                    <div style="margin: 1.5rem 0;">
+                        <span class="rank-badge ${badgeClass}">${alertEmoji} ${alertLevel}</span>
+                    </div>
+                    <div class="rank-score-grid">
+                        <div class="rank-score-item"><div class="label">Questions Answered</div><div class="value">${totalAnswered} / 150</div></div>
+                        <div class="rank-score-item"><div class="label">Avg. Response Index</div><div class="value">${averageScore} / 5.0</div></div>
+                        <div class="rank-score-item"><div class="label">High-Risk Indicators</div><div class="value">${highRiskCount}</div></div>
+                        <div class="rank-score-item"><div class="label">Risk Exposure</div><div class="value">${riskExposurePercentage}%</div></8></div>
+                    </div>
+                    <div style="background:#f9fafc; padding:1.5rem; border-radius:12px; max-width:700px; margin:1.5rem auto; text-align:left; border-left: 4px solid #1a4b8c;">
+                        <strong style="color:#1a4b8c; font-size:1.1rem;">🔍 Auditor Recommendation:</strong>
+                        <p style="margin-top:0.5rem; color:#2c3e50; line-height: 1.6;">${recommendation}</p>
+                    </div>
+                    <p style="color:#4a5c72; font-size:0.9rem; margin-top:1.5rem;">
+                        Your full detailed responses and scoring matrix have been downloaded as a JSON file for your records.
+                    </p>
+                    <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="location.reload()">Start New Audit</button>
+                </div>
+            `;
+            document.getElementById('navButtons').style.display = 'none';
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressText').textContent = '100%';
+        }
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            renderSection(0);
+
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                goToSection(currentSection - 1);
+            });
+            
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                if (validateCurrentSection()) {
+                    goToSection(currentSection + 1);
+                }
+            });
+            
+            document.getElementById('submitBtn').addEventListener('click', function() {
+                if (validateCurrentSection()) {
+                    if (confirm('Submit your audit and view the HR Integrity Risk Ranking Report?')) {
+                        submitSurvey();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
